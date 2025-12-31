@@ -1,0 +1,6 @@
+id: "MoLOS-Tasks"
+name: "MoLOS Tasks and Project management"
+version: "1.0.0"
+description: "Official MoLOS module for managing tasks, projects and goals"
+author: "MoLOS Team"
+icon: "SquareCheck"
