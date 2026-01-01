@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { AreaRepository } from './area-repository';
-import { createTestDb } from '$lib/test-utils';
+import { createTestDb } from '../lib/test-utils';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { CreateAreaInput } from '$lib/modules/MoLOS-Tasks/models';
+import type { CreateAreaInput } from '../models';
 
 describe('AreaRepository', () => {
 	let db: BetterSQLite3Database<Record<string, unknown>>;
@@ -10,7 +10,7 @@ describe('AreaRepository', () => {
 	const userId = 'test-user-1';
 
 	beforeEach(async () => {
-		db = (await createTestDb()) as unknown as BetterSQLite3Database<Record<string, unknown>>;
+		db = await createTestDb();
 		repository = new AreaRepository(db as any);
 	});
 

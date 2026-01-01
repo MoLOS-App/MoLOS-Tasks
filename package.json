@@ -9,6 +9,7 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"db:generate": "drizzle-kit generate",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
 		"init:standalone": "tsx ../MoLOS/scripts/init-standalone.ts"
@@ -26,6 +27,7 @@
 		"vite": "^7.3.0"
 	},
 	"dependencies": {
+		"better-sqlite3": "^12.5.0",
 		"drizzle-orm": "^0.41.0",
 		"lucide-svelte": "^0.561.0",
 		"mdsvex": "^0.12.6",
