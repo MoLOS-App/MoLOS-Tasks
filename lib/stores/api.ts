@@ -21,13 +21,13 @@ import type {
 
 // Tasks
 export async function fetchTasks(): Promise<Task[]> {
-	const res = await fetch('/api/tasks');
+	const res = await fetch('/api/MoLOS-Tasks');
 	if (!res.ok) throw new Error('Failed to fetch tasks');
 	return await res.json();
 }
 
 export async function createTask(data: CreateTaskInput): Promise<Task> {
-	const res = await fetch('/api/tasks', {
+	const res = await fetch('/api/MoLOS-Tasks', {
 		method: 'POST',
 		body: JSON.stringify(data)
 	});
@@ -36,7 +36,7 @@ export async function createTask(data: CreateTaskInput): Promise<Task> {
 }
 
 export async function updateTask(id: string, updates: UpdateTaskInput): Promise<Task> {
-	const res = await fetch('/api/tasks', {
+	const res = await fetch('/api/MoLOS-Tasks', {
 		method: 'PUT',
 		body: JSON.stringify({ id, ...updates })
 	});
@@ -45,7 +45,7 @@ export async function updateTask(id: string, updates: UpdateTaskInput): Promise<
 }
 
 export async function deleteTask(id: string): Promise<void> {
-	const res = await fetch('/api/tasks', {
+	const res = await fetch('/api/MoLOS-Tasks', {
 		method: 'DELETE',
 		body: JSON.stringify({ id })
 	});
@@ -54,13 +54,13 @@ export async function deleteTask(id: string): Promise<void> {
 
 // Projects
 export async function fetchProjects(): Promise<Project[]> {
-	const res = await fetch('/api/tasks/projects');
+	const res = await fetch('/api/MoLOS-Tasks/projects');
 	if (!res.ok) throw new Error('Failed to fetch projects');
 	return await res.json();
 }
 
 export async function createProject(data: CreateProjectInput): Promise<Project> {
-	const res = await fetch('/api/tasks/projects', {
+	const res = await fetch('/api/MoLOS-Tasks/projects', {
 		method: 'POST',
 		body: JSON.stringify(data)
 	});
@@ -69,7 +69,7 @@ export async function createProject(data: CreateProjectInput): Promise<Project> 
 }
 
 export async function updateProject(id: string, updates: UpdateProjectInput): Promise<Project> {
-	const res = await fetch('/api/tasks/projects', {
+	const res = await fetch('/api/MoLOS-Tasks/projects', {
 		method: 'PUT',
 		body: JSON.stringify({ id, ...updates })
 	});
@@ -78,7 +78,7 @@ export async function updateProject(id: string, updates: UpdateProjectInput): Pr
 }
 
 export async function deleteProject(id: string): Promise<void> {
-	const res = await fetch('/api/tasks/projects', {
+	const res = await fetch('/api/MoLOS-Tasks/projects', {
 		method: 'DELETE',
 		body: JSON.stringify({ id })
 	});
@@ -87,13 +87,13 @@ export async function deleteProject(id: string): Promise<void> {
 
 // Areas
 export async function fetchAreas(): Promise<Area[]> {
-	const res = await fetch('/api/tasks/areas');
+	const res = await fetch('/api/MoLOS-Tasks/areas');
 	if (!res.ok) throw new Error('Failed to fetch areas');
 	return await res.json();
 }
 
 export async function createArea(data: CreateAreaInput): Promise<Area> {
-	const res = await fetch('/api/tasks/areas', {
+	const res = await fetch('/api/MoLOS-Tasks/areas', {
 		method: 'POST',
 		body: JSON.stringify(data)
 	});
@@ -102,7 +102,7 @@ export async function createArea(data: CreateAreaInput): Promise<Area> {
 }
 
 export async function updateArea(id: string, updates: UpdateAreaInput): Promise<Area> {
-	const res = await fetch('/api/tasks/areas', {
+	const res = await fetch('/api/MoLOS-Tasks/areas', {
 		method: 'PUT',
 		body: JSON.stringify({ id, ...updates })
 	});
@@ -111,7 +111,7 @@ export async function updateArea(id: string, updates: UpdateAreaInput): Promise<
 }
 
 export async function deleteArea(id: string): Promise<void> {
-	const res = await fetch('/api/tasks/areas', {
+	const res = await fetch('/api/MoLOS-Tasks/areas', {
 		method: 'DELETE',
 		body: JSON.stringify({ id })
 	});
@@ -120,13 +120,13 @@ export async function deleteArea(id: string): Promise<void> {
 
 // Daily Log
 export async function fetchDailyLogs(): Promise<DailyLog[]> {
-	const res = await fetch('/api/tasks/daily-log');
+	const res = await fetch('/api/MoLOS-Tasks/daily-log');
 	if (!res.ok) throw new Error('Failed to fetch daily logs');
 	return await res.json();
 }
 
 export async function createDailyLog(data: CreateDailyLogInput): Promise<DailyLog> {
-	const res = await fetch('/api/tasks/daily-log', {
+	const res = await fetch('/api/MoLOS-Tasks/daily-log', {
 		method: 'POST',
 		body: JSON.stringify(data)
 	});
@@ -138,7 +138,7 @@ export async function updateDailyLog(
 	logDate: number,
 	updates: UpdateDailyLogInput
 ): Promise<DailyLog> {
-	const res = await fetch('/api/tasks/daily-log', {
+	const res = await fetch('/api/MoLOS-Tasks/daily-log', {
 		method: 'PUT',
 		body: JSON.stringify({ logDate, ...updates })
 	});
@@ -150,13 +150,13 @@ export async function updateDailyLog(
  * Settings API
  */
 export async function fetchSettings(): Promise<TasksSettings> {
-	const res = await fetch('/api/tasks/settings');
+	const res = await fetch('/api/MoLOS-Tasks/settings');
 	if (!res.ok) throw new Error('Failed to fetch tasks settings');
 	return await res.json();
 }
 
 export async function updateSettings(data: UpdateTasksSettingsInput): Promise<TasksSettings> {
-	const res = await fetch('/api/tasks/settings', {
+	const res = await fetch('/api/MoLOS-Tasks/settings', {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(data)

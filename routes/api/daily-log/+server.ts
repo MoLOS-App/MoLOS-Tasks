@@ -1,9 +1,9 @@
-import { DailyLogRepository } from '$lib/repositories/tasks';
+import { DailyLogRepository } from '../../lib/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 /**
- * GET /api/tasks/daily-log
+ * GET /api/MoLOS-Tasks/daily-log
  * Returns the list of all daily logs for the authenticated user
  */
 export const GET: RequestHandler = async ({ locals }) => {
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 };
 
 /**
- * POST /api/tasks/daily-log
+ * POST /api/MoLOS-Tasks/daily-log
  * Creates a new daily log
  * Expected JSON body: { logDate: number, mood?: string, sleepHours?: number, morningRoutine?: boolean, eveningRoutine?: boolean, notes?: string }
  */
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 };
 
 /**
- * PUT /api/tasks/daily-log
+ * PUT /api/MoLOS-Tasks/daily-log
  * Updates an existing daily log
  */
 export const PUT: RequestHandler = async ({ locals, request }) => {
@@ -97,7 +97,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 };
 
 /**
- * DELETE /api/tasks/daily-log
+ * DELETE /api/MoLOS-Tasks/daily-log
  * Deletes a daily log
  */
 export const DELETE: RequestHandler = async ({ locals, request }) => {

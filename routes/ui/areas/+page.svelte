@@ -8,7 +8,7 @@
 		deleteAreaStore,
 		projectsStore,
 		tasksStore
-	} from '$lib/stores/modules/tasks';
+	} from '$lib/modules/MoLOS-Tasks/stores';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import {

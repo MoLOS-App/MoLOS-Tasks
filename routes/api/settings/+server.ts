@@ -1,4 +1,4 @@
-import { TasksSettingsRepository } from '$lib/repositories/tasks/settings-repository';
+import { TasksSettingsRepository } from '../../lib/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

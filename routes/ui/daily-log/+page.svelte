@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { dailyLogsStore, tasksUIState, loadAllTasksData } from '$lib/stores/modules/tasks';
+	import { dailyLogsStore, tasksUIState, loadAllTasksData } from '$lib/modules/MoLOS-Tasks/stores';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
@@ -40,7 +40,7 @@
 		ChevronRight
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import * as api from '$lib/stores/modules/tasks/api';
+	import * as api from '$lib/modules/MoLOS-Tasks/stores/api';
 
 	// State
 	let showAddDialog = $state(false);
@@ -96,7 +96,7 @@
 		if (logDateToDelete === null) return;
 		try {
 			await api.updateDailyLog(logDateToDelete, { mood: undefined, notes: undefined });
-			const res = await fetch('/api/tasks/daily-log', {
+			const res = await fetch('/ui/MoLOS-Tasks/daily-log', {
 				method: 'DELETE',
 				body: JSON.stringify({ logDate: logDateToDelete })
 			});

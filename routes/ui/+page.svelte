@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
-		await goto('/ui/tasks/dashboard');
+		await goto('/ui/MoLOS-Tasks/dashboard');
 	});
 </script>
 

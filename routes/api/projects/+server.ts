@@ -1,4 +1,4 @@
-import { ProjectRepository } from '$lib/repositories/tasks';
+import { ProjectRepository } from '../../lib/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

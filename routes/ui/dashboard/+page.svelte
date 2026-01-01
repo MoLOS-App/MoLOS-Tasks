@@ -6,7 +6,7 @@
 		dailyLogsStore,
 		taskStats,
 		tasksSettingsStore
-	} from '$lib/stores/modules/tasks';
+	} from '$lib/modules/MoLOS-Tasks/stores';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Progress } from '$lib/components/ui/progress/index.js';
@@ -333,7 +333,7 @@
 		<div class="space-y-4">
 			<div class="flex items-center justify-between">
 				<h2 class="text-2xl font-bold tracking-tight">Active Projects</h2>
-				<a href="/ui/tasks/projects" class="text-sm font-medium text-primary hover:underline"
+				<a href="/ui/MoLOS-Tasks/projects" class="text-sm font-medium text-primary hover:underline"
 					>View all projects</a
 				>
 			</div>
@@ -388,14 +388,14 @@
 				</p>
 				<div class="flex justify-center gap-4">
 					<a
-						href="/ui/tasks/my"
+						href="/ui/MoLOS-Tasks/my"
 						class="inline-flex items-center rounded-full bg-primary px-6 py-2.5 font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
 					>
 						<Plus class="mr-2 h-5 w-5" />
 						Add Task
 					</a>
 					<a
-						href="/ui/tasks/projects"
+						href="/ui/MoLOS-Tasks/projects"
 						class="inline-flex items-center rounded-full border px-6 py-2.5 font-semibold transition-colors hover:bg-muted"
 					>
 						<Target class="mr-2 h-5 w-5" />

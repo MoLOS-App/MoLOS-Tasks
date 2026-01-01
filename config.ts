@@ -8,39 +8,43 @@ import type { ModuleConfig } from '../types';
 export const tasksConfig: ModuleConfig = {
 	id: 'tasks',
 	name: 'Tasks',
-	href: '/ui/tasks',
+	href: '/ui/MoLOS-Tasks',
 	icon: SquareCheck,
 	description: 'Task management and project tracking',
 	navigation: [
 		{
 			name: 'Dashboard',
 			icon: ListTodo,
-			href: '/ui/tasks/dashboard'
+			href: '/ui/MoLOS-Tasks/dashboard'
 		},
 		{
 			name: 'My Tasks',
 			icon: SquareCheck,
-			href: '/ui/tasks/my'
+			href: '/ui/MoLOS-Tasks/my'
 		},
 		{
 			name: 'Projects',
 			icon: Briefcase,
-			href: '/ui/tasks/projects'
+			href: '/ui/MoLOS-Tasks/projects'
 		},
 		{
 			name: 'Areas',
 			icon: MapPin,
-			href: '/ui/tasks/areas'
+			href: '/ui/MoLOS-Tasks/areas'
 		},
 		{
 			name: 'Daily Log',
 			icon: Calendar,
-			href: '/ui/tasks/daily-log'
+			href: '/ui/MoLOS-Tasks/daily-log'
 		},
 		{
 			name: 'Settings',
 			icon: Settings,
-			href: '/ui/tasks/settings'
+			href: '/ui/MoLOS-Tasks/settings'
 		}
 	]
 };
+
+
+export const moduleConfig = tasksConfig;
+export default tasksConfig;

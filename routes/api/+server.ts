@@ -1,8 +1,8 @@
-import { TaskRepository } from '$lib/repositories/tasks';
+import { TaskRepository } from '../../lib/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { TaskStatus, TaskPriority } from '$lib/server/db/schema/tasks/tables';
+import { TaskStatus, TaskPriority } from '../../lib/models';
 
 const CreateTaskSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
@@ -22,7 +22,7 @@ const UpdateTaskSchema = CreateTaskSchema.partial().extend({
 });
 
 /**
- * GET /api/tasks
+ * GET /api/MoLOS-Tasks
  * Returns the list of all tasks for the authenticated user
  */
 export const GET: RequestHandler = async ({ locals }) => {
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 };
 
 /**
- * POST /api/tasks
+ * POST /api/MoLOS-Tasks
  * Creates a new task
  * Expected JSON body: { title: string, description?: string, status?: string, priority?: string, dueDate?: number, effort?: number, context?: string[], projectId?: string, areaId?: string }
  */
@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 };
 
 /**
- * PUT /api/tasks
+ * PUT /api/MoLOS-Tasks
  * Updates an existing task
  */
 export const PUT: RequestHandler = async ({ locals, request }) => {
@@ -143,7 +143,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 };
 
 /**
- * DELETE /api/tasks
+ * DELETE /api/MoLOS-Tasks
  * Deletes a task
  */
 export const DELETE: RequestHandler = async ({ locals, request }) => {

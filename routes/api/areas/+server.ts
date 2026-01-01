@@ -1,4 +1,4 @@
-import { AreaRepository } from '$lib/repositories/tasks';
+import { AreaRepository } from '../../lib/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

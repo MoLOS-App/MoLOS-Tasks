@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { loadAllTasksData, tasksUIState } from '$lib/stores/modules/tasks';
+	import { loadAllTasksData, tasksUIState } from '$lib/modules/MoLOS-Tasks/stores/tasks.store';
 	import { Loader2 } from 'lucide-svelte';
 
 	let { children } = $props();
