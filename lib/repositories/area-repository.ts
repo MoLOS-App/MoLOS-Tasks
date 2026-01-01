@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
-import { tasksAreas } from '$lib/server/db/schema';
-import type { Area } from '$lib/models/tasks';
+import { tasksAreas } from '../server/db/schema/tables';
+import type { Area } from '../models';
 import { BaseRepository } from './base-repository';
 
 export class AreaRepository extends BaseRepository {

@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
-import { tasksSettings } from '../../server/db/schema';
+import { tasksSettings } from '../server/db/schema/tables';
 import { BaseRepository } from './base-repository';
-import type { UpdateTasksSettingsInput } from '$lib/models/tasks';
+import type { UpdateTasksSettingsInput } from '../models';
 
 export class TasksSettingsRepository extends BaseRepository {
 	async getByUserId(userId: string) {

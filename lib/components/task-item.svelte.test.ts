@@ -1,7 +1,7 @@
 import { render } from 'vitest-browser-svelte';
 import { describe, it, expect } from 'vitest';
 import TaskItem from './task-item.svelte';
-import { projectsStore, areasStore } from '$lib/stores/modules/tasks';
+import { projectsStore, areasStore } from '$lib/modules/MoLOS-Tasks/stores';
 
 describe('TaskItem Component', () => {
 	const mockTask = {

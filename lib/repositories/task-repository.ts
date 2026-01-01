@@ -1,6 +1,6 @@
 import { eq, and, count } from 'drizzle-orm';
-import { tasksTasks } from '$lib/server/db/schema';
-import type { Task, TaskStatus } from '$lib/models/tasks';
+import { tasksTasks } from '../server/db/schema/tables';
+import type { Task, TaskStatus } from '../models';
 import { BaseRepository } from './base-repository';
 
 export class TaskRepository extends BaseRepository {

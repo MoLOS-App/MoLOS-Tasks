@@ -1,8 +1,15 @@
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
-import { user } from '../auth-schema';
-import { textEnum } from '../../utils';
-import { TaskStatus, TaskPriority, ProjectStatus } from '../../../../models/tasks';
+
+// Standalone compatibility: Use local definitions if core is not available
+// In standalone mode, these will be mocked or simplified
+const user = { id: text('user_id') };
+
+// Mock textEnum for standalone if needed, or use text with check constraint
+const textEnum = (name: string, enumObj: any) => text(name);
+
+// Import models relatively
+import { TaskStatus, TaskPriority, ProjectStatus } from '../../../models/index';
 
 /**
  * Tasks module table schema
@@ -15,7 +22,7 @@ import { TaskStatus, TaskPriority, ProjectStatus } from '../../../../models/task
 /**
  * All Tasks - Master task list (Phase 1.1)
  */
-export const tasksTasks = sqliteTable('tasks_tasks', {
+export const tasksTasks = sqliteTable('MoLOS-Tasks_tasks', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
@@ -42,7 +49,7 @@ export const tasksTasks = sqliteTable('tasks_tasks', {
 /**
  * Projects - Active work (Phase 1.2)
  */
-export const tasksProjects = sqliteTable('tasks_projects', {
+export const tasksProjects = sqliteTable('MoLOS-Tasks_projects', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
@@ -65,7 +72,7 @@ export const tasksProjects = sqliteTable('tasks_projects', {
  * Areas - Life Pillars (Phase 1.3)
  * High-level categories that never "end" (e.g., Health, Finance)
  */
-export const tasksAreas = sqliteTable('tasks_areas', {
+export const tasksAreas = sqliteTable('MoLOS-Tasks_areas', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
@@ -85,7 +92,7 @@ export const tasksAreas = sqliteTable('tasks_areas', {
  * Daily Log - Tracking table (Phase 1.4)
  * One row per day
  */
-export const tasksDailyLog = sqliteTable('tasks_daily_log', {
+export const tasksDailyLog = sqliteTable('MoLOS-Tasks_daily_log', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
@@ -107,10 +114,9 @@ export const tasksDailyLog = sqliteTable('tasks_daily_log', {
 /**
  * Tasks Settings - User preferences for the tasks module
  */
-export const tasksSettings = sqliteTable('tasks_settings', {
+export const tasksSettings = sqliteTable('MoLOS-Tasks_settings', {
 	userId: text('user_id')
-		.primaryKey()
-		.references(() => user.id, { onDelete: 'cascade' }),
+		.primaryKey(),
 	showCompleted: integer('show_completed', { mode: 'boolean' }).notNull().default(false),
 	compactMode: integer('compact_mode', { mode: 'boolean' }).notNull().default(false),
 	notifications: integer('notifications', { mode: 'boolean' }).notNull().default(true),

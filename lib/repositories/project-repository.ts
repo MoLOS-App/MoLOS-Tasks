@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
-import { tasksProjects } from '$lib/server/db/schema';
-import type { Project } from '$lib/models/tasks';
+import { tasksProjects } from '../server/db/schema/tables';
+import type { Project } from '../models';
 import { BaseRepository } from './base-repository';
 
 export class ProjectRepository extends BaseRepository {
