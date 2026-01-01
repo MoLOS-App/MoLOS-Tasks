@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { AreaRepository } from './area-repository';
 import { createTestDb } from '$lib/test-utils';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { CreateAreaInput } from '$lib/modules/MoLOS-Tasks/lib/models';
+import type { CreateAreaInput } from '$lib/modules/MoLOS-Tasks/models';
 
 describe('AreaRepository', () => {
 	let db: BetterSQLite3Database<Record<string, unknown>>;

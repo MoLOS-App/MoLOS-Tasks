@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { TaskRepository } from './task-repository';
 import { createTestDb } from '$lib/test-utils';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { CreateTaskInput } from '$lib/modules/MoLOS-Tasks/lib/models';
+import type { CreateTaskInput } from '$lib/modules/MoLOS-Tasks/models';
 
 describe('TaskRepository', () => {
 	let db: BetterSQLite3Database<Record<string, unknown>>;

@@ -2,7 +2,7 @@ import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { TaskStatus, TaskPriority } from '$lib/modules/MoLOS-Tasks/lib/models';
+import { TaskStatus, TaskPriority } from '$lib/modules/MoLOS-Tasks/models';
 
 const CreateTaskSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
