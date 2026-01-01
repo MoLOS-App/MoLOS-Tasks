@@ -118,3 +118,18 @@ export interface TasksSettings {
 export type UpdateTasksSettingsInput = Partial<
 	Omit<TasksSettings, 'userId' | 'createdAt' | 'updatedAt'>
 >;
+
+/**
+ * AI Tool Types
+ */
+export interface ToolDefinition {
+	name: string;
+	description: string;
+	parameters: {
+		type: 'object';
+		properties: Record<string, unknown>;
+		required?: string[];
+	};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	execute: (params: any) => Promise<any>;
+}
