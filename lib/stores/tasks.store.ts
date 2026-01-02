@@ -12,7 +12,7 @@ import type {
 	UpdateProjectInput,
 	CreateAreaInput,
 	UpdateAreaInput
-} from '$lib/modules/MoLOS-Tasks/lib/models';
+} from '$lib/models/external_modules/MoLOS-Tasks';
 import * as api from './api';
 
 /**

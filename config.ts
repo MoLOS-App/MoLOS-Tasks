@@ -4,7 +4,7 @@
  */
 
 import { SquareCheck, ListTodo, Briefcase, MapPin, Calendar, Settings } from 'lucide-svelte';
-import type { ModuleConfig } from '$lib/config/modules/types';
+import type { ModuleConfig } from '$lib/config/types';
 export const tasksConfig: ModuleConfig = {
  	id: 'MoLOS-Tasks',
 	name: 'Tasks',

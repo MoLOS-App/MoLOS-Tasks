@@ -10,8 +10,8 @@
 		deleteTaskStore,
 		tasksUIState,
 		tasksSettingsStore
-	} from '$lib/modules/MoLOS-Tasks/stores';
-	import TaskItem from '$lib/modules/MoLOS-Tasks/components/task-item.svelte';
+	} from '$lib/stores/external_modules/MoLOS-Tasks';
+	import TaskItem from '$lib/components/external_modules/MoLOS-Tasks/task-item.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import {

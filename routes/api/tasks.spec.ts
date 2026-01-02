@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GET, POST, PUT, DELETE } from './+server';
-import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories';
+import { TaskRepository } from '$lib/repositories/external_modules/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/task-repository';
 import { createTestDb } from '$lib/test-utils';
 import { error, json } from '@sveltejs/kit';
 

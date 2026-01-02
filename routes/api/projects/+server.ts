@@ -1,6 +1,7 @@
-import { ProjectRepository } from '$lib/modules/MoLOS-Tasks/repositories';
+import { ProjectRepository } from '$lib/repositories/external_modules/MoLOS-Tasks/project-repository';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { db } from '$lib/server/db';
 
 /**
  * GET /api/projects
@@ -13,7 +14,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	try {
-		const projectRepo = new ProjectRepository();
+		const projectRepo = new ProjectRepository(db);
 		const projects = await projectRepo.getByUserId(userId, 100);
 		return json(projects);
 	} catch (err) {
@@ -40,7 +41,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			throw error(400, 'Name is required');
 		}
 
-		const projectRepo = new ProjectRepository();
+		const projectRepo = new ProjectRepository(db);
 		const project = await projectRepo.create({
 			userId,
 			name,
@@ -78,7 +79,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 			throw error(400, 'Project id is required');
 		}
 
-		const projectRepo = new ProjectRepository();
+		const projectRepo = new ProjectRepository(db);
 		const project = await projectRepo.update(id, userId, updates);
 
 		if (!project) {
@@ -112,7 +113,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 			throw error(400, 'Project id is required');
 		}
 
-		const projectRepo = new ProjectRepository();
+		const projectRepo = new ProjectRepository(db);
 		const deleted = await projectRepo.delete(id, userId);
 
 		if (!deleted) {

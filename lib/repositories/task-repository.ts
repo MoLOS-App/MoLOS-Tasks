@@ -1,6 +1,6 @@
 import { eq, and, count } from 'drizzle-orm';
-import { tasksTasks } from '../server/db/schema/tables';
-import type { Task, TaskStatus } from '../models';
+import { tasksTasks } from '$lib/server/db/schema/external_modules/MoLOS-Tasks/tables';
+import type { Task, TaskStatus } from '$lib/models/external_modules/MoLOS-Tasks';
 import { BaseRepository } from './base-repository';
 
 export class TaskRepository extends BaseRepository {

@@ -1,4 +1,4 @@
-import { DailyLogRepository } from '$lib/modules/MoLOS-Tasks/repositories';
+import { DailyLogRepository } from '$lib/repositories/external_modules/MoLOS-Tasks/daily-log-repository';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

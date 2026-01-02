@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
-import { tasksSettings } from '../server/db/schema/tables';
+import { tasksSettings } from '$lib/server/db/schema/external_modules/MoLOS-Tasks/tables';
 import { BaseRepository } from './base-repository';
-import type { UpdateTasksSettingsInput } from '../models';
+import type { UpdateTasksSettingsInput } from '$lib/models/external_modules/MoLOS-Tasks';
 
 export class TasksSettingsRepository extends BaseRepository {
 	async getByUserId(userId: string) {

@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
-import { tasksDailyLog } from '../server/db/schema/tables';
-import type { DailyLog } from '../models';
+import { tasksDailyLog } from '$lib/server/db/schema/external_modules/MoLOS-Tasks/tables';
+import type { DailyLog } from '$lib/models/external_modules/MoLOS-Tasks';
 import { BaseRepository } from './base-repository';
 
 export class DailyLogRepository extends BaseRepository {
