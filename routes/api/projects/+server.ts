@@ -1,4 +1,4 @@
-import { ProjectRepository } from '../../lib/repositories';
+import { ProjectRepository } from '$lib/modules/MoLOS-Tasks/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

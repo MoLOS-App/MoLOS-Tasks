@@ -1,8 +1,8 @@
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
-import { user } from '../auth-schema';
-import { textEnum } from '../../utils';
-import { TaskStatus, TaskPriority, ProjectStatus } from '../../../../models/tasks';
+import { user } from '$lib/server/db/schema/auth-schema';
+import { textEnum } from '$lib/server/db/utils';
+import { TaskStatus, TaskPriority, ProjectStatus } from '$lib/modules/MoLOS-Tasks/models';
 
 /**
  * Tasks module table schema

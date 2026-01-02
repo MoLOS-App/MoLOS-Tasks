@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Trash2, Check, Calendar, Flag, GripVertical } from 'lucide-svelte';
-	import { projectsStore, areasStore } from '$lib/stores/modules/tasks';
+	import { projectsStore, areasStore } from '$lib/modules/MoLOS-Tasks/stores';
 
 	interface Props {
 		task: {

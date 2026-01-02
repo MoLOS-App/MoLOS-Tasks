@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GET, POST, PUT, DELETE } from './+server';
-import { TaskRepository } from '$lib/repositories/tasks';
+import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories';
 import { createTestDb } from '$lib/test-utils';
 import { error, json } from '@sveltejs/kit';
 
@@ -11,7 +11,7 @@ vi.mock('@sveltejs/kit', () => ({
 }));
 
 // Mock TaskRepository to use in-memory DB
-vi.mock('$lib/repositories/tasks', () => {
+vi.mock('$lib/modules/MoLOS-Tasks/repositories', () => {
 	return {
 		TaskRepository: vi.fn().mockImplementation(function (this: any) {
 			return (globalThis as any).mockRepoInstance;
@@ -28,7 +28,7 @@ describe('Tasks API', () => {
 		vi.clearAllMocks();
 		const db = await createTestDb();
 		// We need a real instance but pointing to test DB
-		const { TaskRepository: RealRepo } = (await vi.importActual('$lib/repositories/tasks')) as any;
+		const { TaskRepository: RealRepo } = (await vi.importActual('$lib/modules/MoLOS-Tasks/repositories')) as any;
 		mockRepo = new RealRepo(db);
 		(globalThis as any).mockRepoInstance = mockRepo;
 	});

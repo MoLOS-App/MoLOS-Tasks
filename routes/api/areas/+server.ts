@@ -1,4 +1,4 @@
-import { AreaRepository } from '../../lib/repositories';
+import { AreaRepository } from '$lib/modules/MoLOS-Tasks/repositories';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

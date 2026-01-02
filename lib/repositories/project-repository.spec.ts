@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ProjectRepository } from './project-repository';
 import { createTestDb } from '$lib/test-utils';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { CreateProjectInput } from '$lib/models/tasks';
+import type { CreateProjectInput } from '$lib/modules/MoLOS-Tasks/lib/models';
 
 describe('ProjectRepository', () => {
 	let db: BetterSQLite3Database<Record<string, unknown>>;
