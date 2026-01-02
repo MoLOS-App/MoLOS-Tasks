@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { dailyLogsStore, tasksUIState, loadAllTasksData } from '$lib/modules/MoLOS-Tasks/stores';
+	import { dailyLogsStore, tasksUIState, loadAllTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
@@ -40,7 +40,7 @@
 		ChevronRight
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import * as api from '$lib/modules/MoLOS-Tasks/stores/api';
+	import * as api from '$lib/stores/external_modules/MoLOS-Tasks/api';
 
 	// State
 	let showAddDialog = $state(false);

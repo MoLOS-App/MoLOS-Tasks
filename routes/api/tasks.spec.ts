@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GET, POST, PUT, DELETE } from './+server';
-import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories';
+import { TaskRepository } from '$lib/repositories/external_modules/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/MoLOS-Tasks/task-repository';
 import { createTestDb } from '$lib/test-utils';
 import { error, json } from '@sveltejs/kit';
 
@@ -26,7 +26,30 @@ describe('Tasks API', () => {
 
 	beforeEach(async () => {
 		vi.clearAllMocks();
-		const db = await createTestDb();
+		const client = new Database(':memory:');
+		const db = drizzle(client, { schema: moduleSchema });
+
+		// Create tables manually for in-memory database
+		client.exec(`
+			CREATE TABLE "MoLOS-Tasks_tasks" (
+				"id" text PRIMARY KEY NOT NULL,
+				"user_id" text,
+				"title" text NOT NULL,
+				"description" text,
+				"status" text NOT NULL DEFAULT 'to_do',
+				"priority" text NOT NULL DEFAULT 'medium',
+				"due_date" integer,
+				"do_date" integer,
+				"effort" integer,
+				"context" text,
+				"is_completed" integer NOT NULL DEFAULT 0,
+				"project_id" text,
+				"area_id" text,
+				"created_at" integer NOT NULL DEFAULT (strftime('%s','now')),
+				"updated_at" integer NOT NULL DEFAULT (strftime('%s','now'))
+			);
+		`);
+
 		// We need a real instance but pointing to test DB
 		const { TaskRepository: RealRepo } = (await vi.importActual('$lib/modules/MoLOS-Tasks/repositories')) as any;
 		mockRepo = new RealRepo(db);

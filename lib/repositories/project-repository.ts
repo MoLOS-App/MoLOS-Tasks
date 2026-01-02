@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
-import { tasksProjects } from '../server/db/schema/tables';
-import type { Project } from '../models';
+import { tasksProjects } from '$lib/server/db/schema/external_modules/MoLOS-Tasks/tables';
+import type { Project } from '$lib/models/external_modules/MoLOS-Tasks';
 import { BaseRepository } from './base-repository';
 
 export class ProjectRepository extends BaseRepository {

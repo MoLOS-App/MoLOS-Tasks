@@ -1,8 +1,9 @@
-import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories';
+import { TaskRepository } from '$lib/repositories/external_modules/MoLOS-Tasks/task-repository';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { TaskStatus, TaskPriority } from '$lib/modules/MoLOS-Tasks/models';
+import { TaskStatus, TaskPriority } from '$lib/models/external_modules/MoLOS-Tasks/';
+import { db } from '$lib/server/db';
 
 const CreateTaskSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
@@ -32,7 +33,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	try {
-		const taskRepo = new TaskRepository();
+		const taskRepo = new TaskRepository(db);
 		const tasks = await taskRepo.getByUserId(userId, 100);
 		return json(tasks);
 	} catch (err) {
@@ -73,7 +74,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			areaId
 		} = result.data;
 
-		const taskRepo = new TaskRepository();
+		const taskRepo = new TaskRepository(db);
 		const task = await taskRepo.create({
 			userId,
 			title,
@@ -125,7 +126,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 			finalUpdates.isCompleted = updates.status === TaskStatus.DONE;
 		}
 
-		const taskRepo = new TaskRepository();
+		const taskRepo = new TaskRepository(db);
 		const task = await taskRepo.update(id, userId, finalUpdates);
 
 		if (!task) {
@@ -159,7 +160,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 			throw error(400, 'Task id is required');
 		}
 
-		const taskRepo = new TaskRepository();
+		const taskRepo = new TaskRepository(db);
 		const deleted = await taskRepo.delete(id, userId);
 
 		if (!deleted) {

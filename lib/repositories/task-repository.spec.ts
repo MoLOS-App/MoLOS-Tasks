@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TaskRepository } from './task-repository';
-import { createTestDb } from '$lib/test-utils';
+import { createTestDb } from '../test-utils';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { CreateTaskInput } from '$lib/modules/MoLOS-Tasks/lib/models';
+import type { CreateTaskInput } from '$lib/models/external_modules/MoLOS-Tasks';
 
 describe('TaskRepository', () => {
 	let db: BetterSQLite3Database<Record<string, unknown>>;
@@ -11,7 +11,7 @@ describe('TaskRepository', () => {
 	const otherUserId = 'test-user-2';
 
 	beforeEach(async () => {
-		db = (await createTestDb()) as unknown as BetterSQLite3Database<Record<string, unknown>>;
+		db = await createTestDb();
 		repository = new TaskRepository(db as any);
 	});
 

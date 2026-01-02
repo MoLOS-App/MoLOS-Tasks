@@ -6,7 +6,7 @@
 		dailyLogsStore,
 		taskStats,
 		tasksSettingsStore
-	} from '$lib/modules/MoLOS-Tasks/stores';
+	} from '$lib/stores/external_modules/MoLOS-Tasks';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Progress } from '$lib/components/ui/progress/index.js';

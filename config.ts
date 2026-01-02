@@ -4,9 +4,9 @@
  */
 
 import { SquareCheck, ListTodo, Briefcase, MapPin, Calendar, Settings } from 'lucide-svelte';
-import type { ModuleConfig } from '../types';
+import type { ModuleConfig } from '$lib/config/types';
 export const tasksConfig: ModuleConfig = {
-	id: 'tasks',
+ 	id: 'MoLOS-Tasks',
 	name: 'Tasks',
 	href: '/ui/MoLOS-Tasks',
 	icon: SquareCheck,
