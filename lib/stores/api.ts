@@ -13,7 +13,7 @@ import type {
 	UpdateDailyLogInput,
 	TasksSettings,
 	UpdateTasksSettingsInput
-} from '$lib/modules/MoLOS-Tasks/models';
+} from '$lib/modules/MoLOS-Tasks/lib/models';
 
 /**
  * Tasks API Client

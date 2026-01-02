@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GET, POST, PUT, DELETE } from './+server';
-import { TaskRepository } from '../../../MoLOS/src/lib/modules/MoLOS-Tasks/repositories';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
-import * as moduleSchema from '../../../MoLOS/src/lib/modules/MoLOS-Tasks/server/db/schema/tables';
+import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories';
+import { createTestDb } from '$lib/test-utils';
 import { error, json } from '@sveltejs/kit';
 
 // Mock SvelteKit error and json helpers
@@ -13,7 +11,7 @@ vi.mock('@sveltejs/kit', () => ({
 }));
 
 // Mock TaskRepository to use in-memory DB
-vi.mock('../../../MoLOS/src/lib/modules/MoLOS-Tasks/repositories', () => {
+vi.mock('$lib/modules/MoLOS-Tasks/repositories', () => {
 	return {
 		TaskRepository: vi.fn().mockImplementation(function (this: any) {
 			return (globalThis as any).mockRepoInstance;

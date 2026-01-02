@@ -1,9 +1,8 @@
-import { TaskRepository } from '../../repositories/task-repository';
-import { ProjectRepository } from '../../repositories/project-repository';
-import { AreaRepository } from '../../repositories/area-repository';
-import { DailyLogRepository } from '../../repositories/daily-log-repository';
-import type { ToolDefinition } from '../../models';
-import { db } from '$lib/server/db';
+import { TaskRepository } from '$lib/modules/MoLOS-Tasks/repositories/task-repository';
+import { ProjectRepository } from '$lib/modules/MoLOS-Tasks/repositories/project-repository';
+import { AreaRepository } from '$lib/modules/MoLOS-Tasks/repositories/area-repository';
+import { DailyLogRepository } from '$lib/modules/MoLOS-Tasks/repositories/daily-log-repository';
+import type { ToolDefinition } from '$lib/modules/MoLOS-Tasks/lib/models';
 
 export function getAiTools(userId: string): ToolDefinition[] {
 	const taskRepo = new TaskRepository(db as any);

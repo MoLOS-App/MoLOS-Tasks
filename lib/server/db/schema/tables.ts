@@ -1,15 +1,8 @@
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
-
-// Standalone compatibility: Use local definitions if core is not available
-// In standalone mode, these will be mocked or simplified
-const user = { id: text('user_id') };
-
-// Mock textEnum for standalone if needed, or use text with check constraint
-const textEnum = (name: string, enumObj: any) => text(name);
-
-// Import models relatively
-import { TaskStatus, TaskPriority, ProjectStatus } from '../../../models/index';
+import { user } from '$lib/server/db/schema/auth-schema';
+import { textEnum } from '$lib/server/db/utils';
+import { TaskStatus, TaskPriority, ProjectStatus } from '$lib/modules/MoLOS-Tasks/models';
 
 /**
  * Tasks module table schema
