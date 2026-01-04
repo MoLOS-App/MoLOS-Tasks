@@ -69,12 +69,14 @@ graph TD
 ### Installation
 
 1. **Place the Module**:
+
    ```bash
    # Copy MoLOS-Tasks folder to the external_modules directory
    cp -r MoLOS-Tasks ../MoLOS/external_modules/
    ```
 
 2. **Sync Modules**:
+
    ```bash
    cd ../MoLOS
    npm run modules:sync
@@ -155,7 +157,7 @@ export class TaskStore {
 
   async createTask(data: CreateTaskData) {
     const task = await this.repository.create(data);
-    this.tasks.update(tasks => [...tasks, task]);
+    this.tasks.update((tasks) => [...tasks, task]);
   }
 }
 ```
@@ -193,11 +195,11 @@ Use relative imports within the module. The MoLOS core will automatically standa
 
 ```typescript
 // ✅ Correct: Relative imports
-import { TaskStore } from '../stores/task.store';
-import { TaskRepository } from '../repositories/task-repository';
+import { TaskStore } from "../stores/task.store";
+import { TaskRepository } from "../repositories/task-repository";
 
 // ❌ Avoid: Absolute imports (will be rewritten by core)
-import { TaskStore } from '$lib/stores/task.store';
+import { TaskStore } from "$lib/stores/task.store";
 ```
 
 ### Database Migrations
@@ -218,7 +220,7 @@ Use Svelte stores for reactive state:
 
 ```typescript
 // lib/stores/tasks.store.ts
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 export const tasksStore = writable<Task[]>([]);
 
@@ -251,9 +253,9 @@ export async function createTask(data: TaskData): Promise<Task> {
     return task;
   } catch (error) {
     if (error instanceof ZodError) {
-      throw new ValidationError('Invalid task data', error.errors);
+      throw new ValidationError("Invalid task data", error.errors);
     }
-    throw new DatabaseError('Failed to create task', error);
+    throw new DatabaseError("Failed to create task", error);
   }
 }
 ```
@@ -262,21 +264,21 @@ export async function createTask(data: TaskData): Promise<Task> {
 
 ```typescript
 // lib/repositories/task-repository.spec.ts
-describe('TaskRepository', () => {
+describe("TaskRepository", () => {
   let repository: TaskRepository;
 
   beforeEach(() => {
     repository = new TaskRepository(db);
   });
 
-  it('should create a task', async () => {
+  it("should create a task", async () => {
     const task = await repository.create({
-      title: 'Test Task',
-      quadrant: 'urgent_important'
+      title: "Test Task",
+      quadrant: "urgent_important",
     });
 
     expect(task.id).toBeDefined();
-    expect(task.title).toBe('Test Task');
+    expect(task.title).toBe("Test Task");
   });
 });
 ```
@@ -308,12 +310,12 @@ describe('TaskRepository', () => {
 
 ```typescript
 // routes/api/tasks/+server.ts
-import { TaskRepository } from '$lib/repositories/task-repository';
-import { json } from '@sveltejs/kit';
+import { TaskRepository } from "$lib/repositories/task-repository";
+import { json } from "@sveltejs/kit";
 
 export async function GET({ url }) {
   const repository = new TaskRepository();
-  const quadrant = url.searchParams.get('quadrant');
+  const quadrant = url.searchParams.get("quadrant");
 
   const tasks = await repository.findByQuadrant(quadrant);
   return json(tasks);
@@ -324,12 +326,12 @@ export async function GET({ url }) {
 
 ```typescript
 // Integration with other MoLOS modules
-import { notesApi } from '$lib/modules/notes/api';
+import { notesApi } from "$lib/modules/notes/api";
 
 export class TaskService {
   async linkToNote(taskId: number, noteId: number) {
     // Link task to knowledge module note
-    await notesApi.linkEntity(noteId, 'task', taskId);
+    await notesApi.linkEntity(noteId, "task", taskId);
   }
 }
 ```

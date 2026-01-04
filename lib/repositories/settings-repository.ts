@@ -1,33 +1,36 @@
-import { eq } from 'drizzle-orm';
-import { tasksSettings } from '$lib/server/db/schema/external_modules/MoLOS-Tasks/tables';
-import { BaseRepository } from './base-repository';
-import type { UpdateTasksSettingsInput } from '$lib/models/external_modules/MoLOS-Tasks';
+import { eq } from "drizzle-orm";
+import { tasksSettings } from "$lib/server/db/schema/external_modules/MoLOS-Tasks/tables";
+import { BaseRepository } from "./base-repository";
+import type { UpdateTasksSettingsInput } from "$lib/models/external_modules/MoLOS-Tasks";
 
 export class TasksSettingsRepository extends BaseRepository {
-	async getByUserId(userId: string) {
-		const [result] = await this.db
-			.select()
-			.from(tasksSettings)
-			.where(eq(tasksSettings.userId, userId))
-			.limit(1);
+  async getByUserId(userId: string) {
+    const [result] = await this.db
+      .select()
+      .from(tasksSettings)
+      .where(eq(tasksSettings.userId, userId))
+      .limit(1);
 
-		if (!result) {
-			const [newSettings] = await this.db.insert(tasksSettings).values({ userId }).returning();
-			return newSettings;
-		}
+    if (!result) {
+      const [newSettings] = await this.db
+        .insert(tasksSettings)
+        .values({ userId })
+        .returning();
+      return newSettings;
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	async update(userId: string, data: UpdateTasksSettingsInput) {
-		const [result] = await this.db
-			.update(tasksSettings)
-			.set({
-				...data,
-				updatedAt: Math.floor(Date.now() / 1000)
-			})
-			.where(eq(tasksSettings.userId, userId))
-			.returning();
-		return result;
-	}
+  async update(userId: string, data: UpdateTasksSettingsInput) {
+    const [result] = await this.db
+      .update(tasksSettings)
+      .set({
+        ...data,
+        updatedAt: Math.floor(Date.now() / 1000),
+      })
+      .where(eq(tasksSettings.userId, userId))
+      .returning();
+    return result;
+  }
 }
