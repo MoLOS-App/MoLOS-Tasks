@@ -10,6 +10,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "db:generate": "drizzle-kit generate",
+    "test:unit": "vitest",
+    "test": "npm run test:unit -- --run",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "init:standalone": "tsx ../MoLOS/scripts/init-standalone.ts"
@@ -31,6 +33,7 @@
     "drizzle-orm": "^0.41.0",
     "lucide-svelte": "^0.561.0",
     "mdsvex": "^0.12.6",
+    "vitest": "^4.0.16",
     "yaml": "^2.0.0",
     "zod": "^3.0.0"
   }
