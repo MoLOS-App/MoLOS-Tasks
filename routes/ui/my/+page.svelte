@@ -60,10 +60,10 @@
 	let formProjectId = $state<string>('');
 	let formAreaId = $state<string>('');
 
+	let selectedProjectNames = $state<string[]>([]);
 	let filters = $state({
 		status: '',
 		priority: '',
-		projectId: '',
 		areaId: '',
 		dueDateFrom: '',
 		dueDateTo: ''
@@ -192,7 +192,8 @@
 	const matchesFilters = (task: any) => {
 		if (filters.status && task.status !== filters.status) return false;
 		if (filters.priority && task.priority !== filters.priority) return false;
-		if (filters.projectId && task.projectId !== filters.projectId) return false;
+		const project = $projectsStore.find(p => p.id === task.projectId);
+		if (selectedProjectNames.length > 0 && (!project || !selectedProjectNames.includes(project.name))) return false;
 		if (filters.areaId && task.areaId !== filters.areaId) return false;
 		if (
 			filters.dueDateFrom &&
@@ -212,6 +213,7 @@
 		$tasksStore.filter((t) => (showCompleted || t.status !== 'done') && matchesFilters(t))
 	);
 
+	const activeProjects = $derived($projectsStore.filter(p => $tasksStore.some(t => t.projectId === p.id)));
 	const columns = $derived([
 		{ id: 'to_do', title: 'To Do', color: 'bg-muted' },
 		{ id: 'in_progress', title: 'In Progress', color: 'bg-primary' },
@@ -273,6 +275,48 @@
 					/>
 				</div>
 
+				<!-- Project Filter -->
+				<div class="w-full mt-2">
+					<div class="flex gap-2 overflow-x-auto pb-2">
+						{#each activeProjects as project}
+							{#if !selectedProjectNames.includes(project.name)}
+								<Badge
+									variant="outline"
+									class="cursor-pointer shrink-0"
+									onclick={() => selectedProjectNames = [...selectedProjectNames, project.name]}
+								>
+									{project.name}
+								</Badge>
+							{/if}
+						{/each}
+						{#each selectedProjectNames as name}
+							<Badge variant="default" class="cursor-pointer shrink-0">
+								{name}
+								<X class="ml-1 h-3 w-3" onclick={() => selectedProjectNames = selectedProjectNames.filter(n => n !== name)} />
+							</Badge>
+						{/each}
+						<input
+							type="text"
+							placeholder="Add custom project..."
+							class="flex-1 min-w-[150px] h-6 px-2 text-sm border rounded shrink-0"
+							onkeydown={(e) => {
+								if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+									const name = e.currentTarget.value.trim();
+									if (!selectedProjectNames.includes(name)) {
+										selectedProjectNames = [...selectedProjectNames, name];
+									}
+									e.currentTarget.value = '';
+								}
+							}}
+						/>
+						{#if selectedProjectNames.length > 0}
+							<Button variant="ghost" size="sm" class="shrink-0" onclick={() => selectedProjectNames = []}>
+								Clear All
+							</Button>
+						{/if}
+					</div>
+				</div>
+
 				<Button
 					variant={filterOpen ? 'secondary' : 'outline'}
 					size="sm"
@@ -297,16 +341,16 @@
 					{showCompleted ? 'Hide Completed' : 'Show Completed'}
 				</Button>
 
-				{#if search || Object.values(filters).some((v) => v !== '')}
+				{#if search || Object.values(filters).some((v) => v !== '') || selectedProjectNames.length > 0}
 					<Button
 						variant="ghost"
 						size="sm"
 						onclick={() => {
 							search = '';
+							selectedProjectNames = [];
 							filters = {
 								status: '',
 								priority: '',
-								projectId: '',
 								areaId: '',
 								dueDateFrom: '',
 								dueDateTo: ''
@@ -335,20 +379,6 @@
 							<option value="high">High</option>
 							<option value="medium">Medium</option>
 							<option value="low">Low</option>
-						</select>
-					</div>
-					<div class="space-y-1.5">
-						<Label class="text-muted-foreground text-xs font-bold tracking-wider uppercase"
-							>Project</Label
-						>
-						<select
-							bind:value={filters.projectId}
-							class="h-9 w-full rounded-md border bg-background px-3 text-sm"
-						>
-							<option value="">All Projects</option>
-							{#each $projectsStore as p}
-								<option value={p.id}>{p.name}</option>
-							{/each}
 						</select>
 					</div>
 					<div class="space-y-1.5">
