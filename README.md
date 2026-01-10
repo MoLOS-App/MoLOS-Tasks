@@ -4,11 +4,11 @@
 
 A comprehensive task management module for the MoLOS (Modular Life Organization System) ecosystem. This module provides Eisenhower Matrix-based task prioritization, project organization, area management, and daily logging capabilities.
 
-## 📋 Overview
+# ✔️ Overview
 
 MoLOS-Tasks is a modular component that integrates seamlessly into the main MoLOS application, providing robust task management functionality while maintaining the core philosophy of modularity and privacy-first design.
 
-### 🎯 Core Features
+## ✔️ Core Features
 
 - **Eisenhower Matrix**: Prioritize tasks based on urgency and importance
 - **Project Management**: Organize tasks into projects with flexible hierarchies
@@ -17,192 +17,178 @@ MoLOS-Tasks is a modular component that integrates seamlessly into the main MoLO
 - **Smart Filtering**: Advanced filtering and search capabilities
 - **Real-time Updates**: Live synchronization across the application
 
-## 🔗 Relationship to MoLOS
+# ✔️ Relationship to MoLOS
 
-### Architecture Integration
+## Architecture Integration
 
 MoLOS-Tasks operates as a **plug-and-play module** within the MoLOS ecosystem:
 
-```
-MoLOS (Core Application)
-├── Core Framework (SvelteKit, Drizzle, etc.)
-├── Module System
-│   ├── Auto-discovery
-│   ├── Dynamic Linking
-│   └── Database Synchronization
-└── MoLOS-Tasks (This Module)
-    ├── UI Routes (/ui/tasks/*)
-    ├── API Endpoints (/api/tasks/*)
-    ├── Database Schema (tasks_* tables)
-    └── Shared Components
-```
+# ✔️ Getting Started
 
-### Data Flow
-
-```mermaid
-graph TD
-    A[User Interface] --> B[MoLOS-Tasks Routes]
-    B --> C[Task Stores]
-    C --> D[Task Repositories]
-    D --> E[Drizzle ORM]
-    E --> F[SQLite Database]
-    F --> G[Module Schema]
-```
-
-### Module Lifecycle
-
-1. **Discovery**: MoLOS scans for `MoLOS-*` folders in the workspace
-2. **Registration**: Module metadata is stored in the core database
-3. **Standardization**: Import paths and routing are automatically adjusted
-4. **Database Sync**: Module-specific tables are created via Drizzle migrations
-5. **Linking**: UI routes and API endpoints are symlinked into the main app
-6. **Activation**: Module becomes available in the unified interface
-
-## 🚀 Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - MoLOS core application installed and running
 - Node.js 20+
 - SQLite database
 
-### Installation
+## UI installation
+
+Just go to:
+ - Settings
+ - Module Management
+ - Install Tab
+ - Paste https://github.com/MoLOS-App/MoLOS-Tasks.git
+ - Install
+
+## Manual installation
 
 1. **Place the Module**:
 
    ```bash
    # Copy MoLOS-Tasks folder to the external_modules directory
-   cp -r MoLOS-Tasks ../MoLOS/external_modules/
+   cp -r MoLOS-Tasks MoLOS/external_modules/
    ```
 
 2. **Sync Modules**:
 
    ```bash
-   cd ../MoLOS
-   npm run modules:sync
+   cd MoLOS
+   npm run module:sync
    ```
 
 3. **Access the Module**:
-   - Navigate to `/tasks` in your MoLOS application
+   - Navigate to `/MoLOS-Tasks` in your MoLOS application
    - The module will be automatically integrated into the main navigation
 
-### Development Setup
+## Development Setup
 
-For standalone development:
+I will do a full module development guide in the future. It will be at [the docs](https://molos-docs.eduard3v.com)
 
-```bash
-cd MoLOS-Tasks
-npm install
-npm run dev
-```
+# ✔️ Architecture
 
-For orchestrated development with MoLOS core:
+## Database Schema
 
-```bash
-cd ../MoLOS
-npm run dev:all
-```
-
-## 🏗️ Architecture
-
-### Database Schema
-
-All tables are prefixed with `tasks_` to maintain namespace isolation:
+All tables are prefixed with `MoLOS-Tasks_` to maintain namespace isolation:
 
 ```sql
--- Core task entity
-tasks_tasks (
-  id INTEGER PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT,
-  status tasks_status_enum,
-  priority tasks_priority_enum,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)
-
--- Eisenhower Matrix relationships
-tasks_task_matrix (
-  task_id INTEGER REFERENCES tasks_tasks(id),
-  quadrant tasks_quadrant_enum,
-  urgency_score INTEGER,
-  importance_score INTEGER
-)
+CREATE TABLE `MoLOS-Tasks_tasks` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text,
+	`title` text NOT NULL,
+	`description` text,
+	`status` text DEFAULT 'to_do' NOT NULL,
+	`priority` text DEFAULT 'medium' NOT NULL,
+	`due_date` integer,
+	`do_date` integer,
+	`effort` integer,
+	`context` text,
+	`is_completed` integer DEFAULT false NOT NULL,
+	`project_id` text,
+	`area_id` text,
+	`created_at` integer DEFAULT (strftime('%s','now')) NOT NULL,
+	`updated_at` integer DEFAULT (strftime('%s','now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `MoLOS-Tasks_areas` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`name` text NOT NULL,
+	`theme_color` text,
+	`description` text,
+	`created_at` integer DEFAULT (strftime('%s','now')) NOT NULL,
+	`updated_at` integer DEFAULT (strftime('%s','now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `MoLOS-Tasks_daily_log` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`log_date` integer NOT NULL,
+	`mood` text,
+	`sleep_hours` real,
+	`morning_routine` integer DEFAULT false,
+	`evening_routine` integer DEFAULT false,
+	`notes` text,
+	`created_at` integer DEFAULT (strftime('%s','now')) NOT NULL,
+	`updated_at` integer DEFAULT (strftime('%s','now')) NOT NULL
+);
 ```
 
-### Repository Pattern
+## Repository Pattern
 
 ```typescript
-// lib/repositories/task-repository.ts
-export class TaskRepository extends BaseRepository {
-  async findByMatrixQuadrant(quadrant: Quadrant): Promise<Task[]> {
-    return this.db
+export class AreaRepository extends BaseRepository {
+  async getByUserId(userId: string): Promise<Area[]> {
+    const result = await this.db
       .select()
-      .from(tasksTable)
-      .where(eq(tasksTable.quadrant, quadrant));
+      .from(tasksAreas)
+      .where(eq(tasksAreas.userId, userId));
+
+    return result as Area[];
+  }
+
+  async getById(id: string, userId: string): Promise<Area | null> {
+    const result = await this.db
+      .select()
+      .from(tasksAreas)
+      .where(and(eq(tasksAreas.id, id), eq(tasksAreas.userId, userId)))
+      .limit(1);
+
+    return result[0] ? (result[0] as Area) : null;
+  }
+
+  async create(
+    area: Omit<Area, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Area> {
+    const result = await this.db.insert(tasksAreas).values(area).returning();
+
+    return result[0] as Area;
+  }
+
+  async update(
+    id: string,
+    userId: string,
+    updates: Partial<Omit<Area, "id" | "userId" | "createdAt" | "updatedAt">>,
+  ): Promise<Area | null> {
+    const result = await this.db
+      .update(tasksAreas)
+      .set({ ...updates, updatedAt: Math.floor(Date.now() / 1000) })
+      .where(and(eq(tasksAreas.id, id), eq(tasksAreas.userId, userId)))
+      .returning();
+
+    return result[0] ? (result[0] as Area) : null;
+  }
+
+  async delete(id: string, userId: string): Promise<boolean> {
+    const result = await this.db
+      .delete(tasksAreas)
+      .where(and(eq(tasksAreas.id, id), eq(tasksAreas.userId, userId)));
+
+    return result.changes > 0;
   }
 }
 ```
 
-### Store Management
+## Naming Conventions
 
-```typescript
-// lib/stores/tasks.store.ts
-export class TaskStore {
-  private tasks = writable<Task[]>([]);
-
-  constructor(private repository: TaskRepository) {
-    this.loadTasks();
-  }
-
-  async createTask(data: CreateTaskData) {
-    const task = await this.repository.create(data);
-    this.tasks.update((tasks) => [...tasks, task]);
-  }
-}
-```
-
-## 🔧 Development Guidelines
-
-### Code Organization
-
-Follow the established MoLOS patterns:
-
-```
-MoLOS-Tasks/
-├── lib/
-│   ├── components/          # Reusable UI components
-│   ├── models/             # TypeScript interfaces/types
-│   ├── repositories/       # Data access layer
-│   ├── stores/            # State management
-│   └── server/            # Server-side utilities
-├── routes/
-│   ├── ui/                # Svelte pages and layouts
-│   └── api/               # API endpoints
-└── drizzle/               # Database migrations
-```
-
-### Naming Conventions
-
-- **Database**: All tables/enums prefixed with `tasks_`
+- **Database**: All tables/enums prefixed with `MoLOS-Tasks_`
 - **Components**: PascalCase for component names
 - **Stores**: camelCase with descriptive names
-- **API Routes**: RESTful patterns (`/api/tasks/[id]`)
+- **API Routes**: RESTful patterns (`/api/MoLOS-Tasks/[id]`)
 
-### Import Path Standards
+## Import Path Standards
 
-Use relative imports within the module. The MoLOS core will automatically standardize paths during integration:
+Use absolute imports within the module. The MoLOS core will automatically standardize paths during integration:
 
 ```typescript
-// ✅ Correct: Relative imports
+// Correct: Absolute imports
+import { TaskStore } from "$lib/stores/task.store";
+
+// Avoid: Relative imports
 import { TaskStore } from "../stores/task.store";
 import { TaskRepository } from "../repositories/task-repository";
-
-// ❌ Avoid: Absolute imports (will be rewritten by core)
-import { TaskStore } from "$lib/stores/task.store";
 ```
 
-### Database Migrations
+## Database Migrations
 
 Always create migrations for schema changes:
 
@@ -211,41 +197,78 @@ Always create migrations for schema changes:
 npx drizzle-kit generate
 
 # Apply migration
-npx drizzle-kit push
+npx drizzle-kit migrate
 ```
 
-### State Management
+## State Management
 
-Use Svelte stores for reactive state:
+Use Svelte stores:
 
 ```typescript
-// lib/stores/tasks.store.ts
-import { writable } from "svelte/store";
+import { writable, derived } from "svelte/store";
 
-export const tasksStore = writable<Task[]>([]);
+...
 
-// For complex state management
-export class TaskManager {
-  private tasks = writable<Task[]>([]);
+// UI State Store
+export const tasksUIState = writable({
+  loading: false,
+  error: null as string | null,
+  lastLoaded: null as number | null,
+});
 
-  subscribe = this.tasks.subscribe;
-  update = this.tasks.update;
+// Derived Stats
+export const taskStats = derived(tasksStore, ($tasks) => {
+  const total = $tasks.length;
+  const completed = $tasks.filter((t) => t.isCompleted).length;
+  const active = total - completed;
+  const now = Math.floor(Date.now() / 1000);
+  const scheduled = $tasks.filter((t) => t.dueDate && t.dueDate > now).length;
+
+  return { total, completed, active, scheduled };
+});
+
+/**
+ * Actions
+ */
+
+export async function addTaskStore(data: CreateTaskInput) {
+  try {
+    const newTask = await api.createTask(data);
+    tasksStore.update((tasks) => [newTask, ...tasks]);
+    return newTask;
+  } catch (err) {
+    console.error("Failed to add task:", err);
+    throw err;
+  }
+}
+
+...
+
+export async function deleteTaskStore(id: string) {
+  try {
+    await api.deleteTask(id);
+    tasksStore.update((tasks) => tasks.filter((t) => t.id !== id));
+  } catch (err) {
+    console.error("Failed to delete task:", err);
+    throw err;
+  }
 }
 ```
 
-## 🛡️ Best Practices
+# 🛡️ Best Practices
 
-### Avoiding Breaking Changes
+## Avoiding Breaking Changes
 
 1. **API Stability**: Maintain backward compatibility in API responses
 2. **Database Schema**: Use additive changes; avoid dropping columns
 3. **Component Props**: Keep component interfaces stable
 4. **Store Contracts**: Don't change store method signatures unexpectedly
+5. **LEAVE ALWAYS THE ACTIONS TO THE API**: This means also at the front, use the API as a centralised entrypoint for data manipulation. Do not use repositories in the +page.server.ts or similar
 
-### Error Handling
+## Error Handling
 
 ```typescript
-// ✅ Good: Comprehensive error handling
+// Good: Comprehensive error handling
 export async function createTask(data: TaskData): Promise<Task> {
   try {
     const validated = taskSchema.parse(data);
@@ -260,69 +283,61 @@ export async function createTask(data: TaskData): Promise<Task> {
 }
 ```
 
-### Testing
+## Testing
 
-```typescript
-// lib/repositories/task-repository.spec.ts
-describe("TaskRepository", () => {
-  let repository: TaskRepository;
+Documentation pending, but testing is also recommended
 
-  beforeEach(() => {
-    repository = new TaskRepository(db);
-  });
-
-  it("should create a task", async () => {
-    const task = await repository.create({
-      title: "Test Task",
-      quadrant: "urgent_important",
-    });
-
-    expect(task.id).toBeDefined();
-    expect(task.title).toBe("Test Task");
-  });
-});
-```
-
-### Performance Considerations
+## Performance Considerations
 
 1. **Lazy Loading**: Load data on-demand
 2. **Pagination**: Implement for large datasets
 3. **Memoization**: Cache expensive computations
-4. **Debouncing**: For search and filter operations
 
-## 🔄 Integration Examples
+# 🔄 Integration Examples
 
-### Using Task Components
+## Using Task Components
 
 ```svelte
-<!-- routes/ui/dashboard/+page.svelte -->
 <script>
   import { TaskItem } from '$lib/components/task-item';
   import { tasksStore } from '$lib/stores/tasks.store';
 </script>
 
 {#each $tasksStore as task}
-  <TaskItem {task} on:complete={handleComplete} />
+  <TaskItem {task} oncomplete={handleComplete} />
 {/each}
 ```
 
-### API Integration
+## API Integration
 
 ```typescript
-// routes/api/tasks/+server.ts
-import { TaskRepository } from "$lib/repositories/task-repository";
-import { json } from "@sveltejs/kit";
+import { TasksSettingsRepository } from "$lib/repositories/external_modules/MoLOS-Tasks/settings-repository";
+import { json, error } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
 
-export async function GET({ url }) {
-  const repository = new TaskRepository();
-  const quadrant = url.searchParams.get("quadrant");
+export const GET: RequestHandler = async ({ locals }) => {
+  const userId = locals.user?.id;
+  if (!userId) throw error(401, "Unauthorized");
 
-  const tasks = await repository.findByQuadrant(quadrant);
-  return json(tasks);
-}
+  const repo = new TasksSettingsRepository();
+  const settings = await repo.getByUserId(userId);
+  return json(settings);
+};
+
+export const PUT: RequestHandler = async ({ locals, request }) => {
+  const userId = locals.user?.id;
+  if (!userId) throw error(401, "Unauthorized");
+
+  const data = await request.json();
+  const repo = new TasksSettingsRepository();
+  const updated = await repo.update(userId, data);
+
+  if (!updated) throw error(404, "Not found");
+  return json(updated);
+};
 ```
 
-### Cross-Module Communication
+## Cross-Module Communication
 
 ```typescript
 // Integration with other MoLOS modules
@@ -336,28 +351,29 @@ export class TaskService {
 }
 ```
 
-## 🐛 Troubleshooting
+# 🐛 Troubleshooting
 
-### Common Issues
+## Common Issues
 
 1. **Module Not Loading**:
    - Ensure `manifest.yaml` is valid
-   - Check that `npm run modules:sync` completed successfully
+   - Check that `npm run module:sync` completed successfully
    - Verify database migrations ran
 
 2. **Import Errors**:
-   - Use relative imports within the module
-   - Avoid `$lib` aliases (handled by core)
+   - Use `$lib` aliases (handled by core)
 
 3. **Database Conflicts**:
-   - Ensure table prefixes are unique
-   - Check migration order in `drizzle.config.ts`
+   - Ensure table prefixes are unique and do not collide with other modules
+   - Have the right prefix
 
-### Debug Commands
+## Debug Commands
+
+Run all these commands inside the core MoLOS app
 
 ```bash
 # Check module status
-npm run modules:sync -- --verbose
+npm run module:sync
 
 # View database schema
 npx drizzle-kit studio
@@ -366,17 +382,17 @@ npx drizzle-kit studio
 npm test
 ```
 
-## 🤝 Contributing
+# 🤝 Contributing
 
-1. Follow the [MoLOS Development Guide](../MoLOS/docs/guides/developing-new-modules/)
+1. Follow the [MoLOS Development Guide](https://docs.molos.com)
 2. Maintain test coverage above 80%
 3. Update documentation for API changes
 4. Use conventional commits
 
-## 📄 License
+# 📄 License
 
 Licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**MoLOS-Tasks** is part of the MoLOS ecosystem. For more information about MoLOS, visit [molos-app.github.io](https://molos-app.github.io).
+**MoLOS-Tasks** is part of the MoLOS ecosystem. For more information about MoLOS, visit [MoLOS Web](https://docs.molos.com).
