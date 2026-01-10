@@ -4,11 +4,11 @@
 
 A comprehensive task management module for the MoLOS (Modular Life Organization System) ecosystem. This module provides Eisenhower Matrix-based task prioritization, project organization, area management, and daily logging capabilities.
 
-# ✔️ Overview
+# Overview
 
 MoLOS-Tasks is a modular component that integrates seamlessly into the main MoLOS application, providing robust task management functionality while maintaining the core philosophy of modularity and privacy-first design.
 
-## ✔️ Core Features
+## Core Features
 
 - **Eisenhower Matrix**: Prioritize tasks based on urgency and importance
 - **Project Management**: Organize tasks into projects with flexible hierarchies
@@ -17,13 +17,13 @@ MoLOS-Tasks is a modular component that integrates seamlessly into the main MoLO
 - **Smart Filtering**: Advanced filtering and search capabilities
 - **Real-time Updates**: Live synchronization across the application
 
-# ✔️ Relationship to MoLOS
+# Relationship to MoLOS
 
 ## Architecture Integration
 
 MoLOS-Tasks operates as a **plug-and-play module** within the MoLOS ecosystem:
 
-# ✔️ Getting Started
+# Getting Started
 
 ## Prerequisites
 
@@ -64,7 +64,7 @@ Just go to:
 
 I will do a full module development guide in the future. It will be at [the docs](https://molos-docs.eduard3v.com)
 
-# ✔️ Architecture
+# Architecture
 
 ## Database Schema
 
@@ -255,7 +255,7 @@ export async function deleteTaskStore(id: string) {
 }
 ```
 
-# 🛡️ Best Practices
+# Best Practices
 
 ## Avoiding Breaking Changes
 
@@ -293,7 +293,7 @@ Documentation pending, but testing is also recommended
 2. **Pagination**: Implement for large datasets
 3. **Memoization**: Cache expensive computations
 
-# 🔄 Integration Examples
+# Integration Examples
 
 ## Using Task Components
 
@@ -351,7 +351,7 @@ export class TaskService {
 }
 ```
 
-# 🐛 Troubleshooting
+# Troubleshooting
 
 ## Common Issues
 
@@ -382,14 +382,14 @@ npx drizzle-kit studio
 npm test
 ```
 
-# 🤝 Contributing
+# Contributing
 
 1. Follow the [MoLOS Development Guide](https://docs.molos.com)
 2. Maintain test coverage above 80%
 3. Update documentation for API changes
 4. Use conventional commits
 
-# 📄 License
+# License
 
 Licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
