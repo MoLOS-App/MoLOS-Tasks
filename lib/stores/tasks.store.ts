@@ -12,6 +12,8 @@ import type {
   UpdateProjectInput,
   CreateAreaInput,
   UpdateAreaInput,
+  CreateDailyLogInput,
+  UpdateDailyLogInput,
 } from "$lib/models/external_modules/MoLOS-Tasks";
 import * as api from "./api";
 
@@ -78,6 +80,52 @@ export async function loadAllTasksData() {
       err instanceof Error ? err.message : "Failed to load tasks data";
     tasksUIState.update((s) => ({ ...s, loading: false, error: message }));
     console.error("Tasks store load error:", err);
+  }
+}
+
+type TasksData = {
+  tasks?: Task[];
+  projects?: Project[];
+  areas?: Area[];
+  dailyLogs?: DailyLog[];
+  settings?: TasksSettings | null;
+};
+
+export function hydrateTasksData(data: TasksData) {
+  let hasData = false;
+
+  if (data.tasks !== undefined) {
+    tasksStore.set(data.tasks);
+    hasData = true;
+  }
+
+  if (data.projects !== undefined) {
+    projectsStore.set(data.projects);
+    hasData = true;
+  }
+
+  if (data.areas !== undefined) {
+    areasStore.set(data.areas);
+    hasData = true;
+  }
+
+  if (data.dailyLogs !== undefined) {
+    dailyLogsStore.set(data.dailyLogs);
+    hasData = true;
+  }
+
+  if (data.settings !== undefined) {
+    tasksSettingsStore.set(data.settings);
+    hasData = true;
+  }
+
+  if (hasData) {
+    tasksUIState.update((s) => ({
+      ...s,
+      loading: false,
+      error: null,
+      lastLoaded: Date.now(),
+    }));
   }
 }
 
@@ -161,4 +209,29 @@ export async function updateTasksSettings(data: UpdateTasksSettingsInput) {
   const updated = await api.updateSettings(data);
   tasksSettingsStore.set(updated);
   return updated;
+}
+
+// Daily Log Actions
+export async function addDailyLogStore(data: CreateDailyLogInput) {
+  const newLog = await api.createDailyLog(data);
+  dailyLogsStore.update((logs) => [newLog, ...logs]);
+  return newLog;
+}
+
+export async function updateDailyLogStore(
+  logDate: number,
+  updates: UpdateDailyLogInput,
+) {
+  const updated = await api.updateDailyLog(logDate, updates);
+  dailyLogsStore.update((logs) =>
+    logs.map((log) => (log.logDate === logDate ? updated : log)),
+  );
+  return updated;
+}
+
+export async function deleteDailyLogStore(logDate: number) {
+  await api.deleteDailyLog(logDate);
+  dailyLogsStore.update((logs) =>
+    logs.filter((log) => log.logDate !== logDate),
+  );
 }

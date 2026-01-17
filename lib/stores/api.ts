@@ -159,6 +159,15 @@ export async function updateDailyLog(
   return await res.json();
 }
 
+export async function deleteDailyLog(logDate: number): Promise<void> {
+  const res = await fetch("/api/MoLOS-Tasks/daily-log", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ logDate }),
+  });
+  if (!res.ok) throw new Error("Failed to delete daily log");
+}
+
 /**
  * Settings API
  */

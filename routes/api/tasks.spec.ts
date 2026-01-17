@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET, POST, PUT, DELETE } from "./+server";
 import { TaskRepository } from "$lib/repositories/external_modules/MoLOS-Tasks/task-repository";
-import { createTestDb } from "$lib/test-utils";
 import { error, json } from "@sveltejs/kit";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
+import * as moduleSchema from "$lib/server/db/schema/external_modules/MoLOS-Tasks/tables";
 
 // Mock SvelteKit error and json helpers
 vi.mock("@sveltejs/kit", () => ({
@@ -11,7 +13,7 @@ vi.mock("@sveltejs/kit", () => ({
 }));
 
 // Mock TaskRepository to use in-memory DB
-vi.mock("$lib/modules/MoLOS-Tasks/repositories", () => {
+vi.mock("$lib/repositories/external_modules/MoLOS-Tasks/task-repository", () => {
   return {
     TaskRepository: vi.fn().mockImplementation(function (this: any) {
       return (globalThis as any).mockRepoInstance;
@@ -52,7 +54,7 @@ describe("Tasks API", () => {
 
     // We need a real instance but pointing to test DB
     const { TaskRepository: RealRepo } = (await vi.importActual(
-      "$lib/modules/MoLOS-Tasks/repositories",
+      "$lib/repositories/external_modules/MoLOS-Tasks/task-repository",
     )) as any;
     mockRepo = new RealRepo(db);
     (globalThis as any).mockRepoInstance = mockRepo;
