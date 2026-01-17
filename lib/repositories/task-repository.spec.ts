@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { TaskRepository } from "./task-repository";
-import { createTestDb } from "../test-utils";
+import { createTestDb } from "$lib/test-utils";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import type { CreateTaskInput } from "$lib/models/external_modules/MoLOS-Tasks";
 

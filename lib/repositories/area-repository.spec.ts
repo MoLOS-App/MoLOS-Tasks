@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { AreaRepository } from "./area-repository";
-import { createTestDb } from "../test-utils";
+import { createTestDb } from "$lib/test-utils";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import type { CreateAreaInput } from "$lib/models/external_modules/MoLOS-Tasks";
 
