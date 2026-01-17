@@ -14,12 +14,7 @@ const fetchJson = async <T>(
 };
 
 export const load: PageServerLoad = async ({ fetch }) => {
-  const [tasks, projects, areas, settings] = await Promise.all([
-    fetchJson(fetch, "/api/MoLOS-Tasks", "tasks"),
-    fetchJson(fetch, "/api/MoLOS-Tasks/projects", "projects"),
-    fetchJson(fetch, "/api/MoLOS-Tasks/areas", "areas"),
-    fetchJson(fetch, "/api/MoLOS-Tasks/settings", "tasks settings"),
-  ]);
+  const settings = await fetchJson(fetch, "/api/MoLOS-Tasks/settings", "tasks settings");
 
-  return { tasks, projects, areas, settings };
+  return { settings };
 };

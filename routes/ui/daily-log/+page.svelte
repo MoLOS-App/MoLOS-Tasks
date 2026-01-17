@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { dailyLogsStore, tasksUIState, loadAllTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
+	import {
+		dailyLogsStore,
+		addDailyLogStore,
+		updateDailyLogStore,
+		deleteDailyLogStore
+	} from '$lib/stores/external_modules/MoLOS-Tasks';
+	import { hydrateTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
@@ -40,7 +48,12 @@
 		ChevronRight
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import * as api from '$lib/stores/external_modules/MoLOS-Tasks/api';
+
+	const { data } = $props<PageData>();
+
+	onMount(() => {
+		hydrateTasksData(data);
+	});
 
 	// State
 	let showAddDialog = $state(false);
@@ -77,11 +90,10 @@
 		};
 
 		try {
-			await api.createDailyLog(data as any);
+			await addDailyLogStore(data as any);
 			toast.success('Daily log saved');
 			showAddDialog = false;
 			resetForm();
-			await loadAllTasksData(); // Refresh store
 		} catch (err) {
 			toast.error('Failed to save daily log');
 		}
@@ -95,15 +107,9 @@
 	const confirmDelete = async () => {
 		if (logDateToDelete === null) return;
 		try {
-			await api.updateDailyLog(logDateToDelete, { mood: undefined, notes: undefined });
-			const res = await fetch('/ui/MoLOS-Tasks/daily-log', {
-				method: 'DELETE',
-				body: JSON.stringify({ logDate: logDateToDelete })
-			});
-			if (res.ok) {
-				toast.success('Entry deleted');
-				await loadAllTasksData();
-			}
+			await updateDailyLogStore(logDateToDelete, { mood: undefined, notes: undefined });
+			await deleteDailyLogStore(logDateToDelete);
+			toast.success('Entry deleted');
 		} catch (err) {
 			toast.error('Failed to delete entry');
 		} finally {
@@ -132,33 +138,33 @@
 	const sortedLogs = $derived([...$dailyLogsStore].sort((a, b) => b.logDate - a.logDate));
 </script>
 
-<div class="mx-auto max-w-4xl space-y-8">
+<div class="max-w-5xl px-1 mx-auto space-y-8 sm:px-0">
 	<!-- Header -->
 	<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Daily Journal</h1>
 			<p class="text-muted-foreground">Track your mood, routines, and daily reflections.</p>
 		</div>
-		<Button onclick={() => (showAddDialog = true)} class="rounded-full px-6 shadow-lg">
-			<Plus class="mr-2 h-5 w-5" />
+		<Button onclick={() => (showAddDialog = true)} class="px-6 rounded-full shadow-lg">
+			<Plus class="w-5 h-5 mr-2" />
 			Log Today
 		</Button>
 	</div>
 
 	<!-- Stats Summary -->
-	<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-		<Card class="border-none shadow-none">
+	<div class="flex flex-col justify-center w-full gap-4 sm:flex-row">
+		<Card class="w-full border-none shadow-none">
 			<CardContent class="pt-6">
-				<BookOpen class="mx-auto mb-2 h-6 w-6 text-primary" />
+				<BookOpen class="w-6 h-6 mx-auto mb-2 text-primary" />
 				<div class="text-2xl font-bold">{$dailyLogsStore.length}</div>
-				<p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+				<p class="text-xs font-medium tracking-wider uppercase text-muted-foreground">
 					Total Entries
 				</p>
 			</CardContent>
 		</Card>
-		<Card class="border-none shadow-none">
+		<Card class="w-full border-none shadow-none">
 			<CardContent class="pt-6">
-				<Sun class="mx-auto mb-2 h-6 w-6 text-primary" />
+				<Sun class="w-6 h-6 mx-auto mb-2 text-primary" />
 				<div class="text-2xl font-bold">
 					{Math.round(
 						($dailyLogsStore.filter((l) => l.morningRoutine).length /
@@ -166,14 +172,14 @@
 							100
 					)}%
 				</div>
-				<p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+				<p class="text-xs font-medium tracking-wider uppercase text-muted-foreground">
 					Morning Routine
 				</p>
 			</CardContent>
 		</Card>
-		<Card class="border-none shadow-none">
+		<Card class="w-full border-none shadow-none">
 			<CardContent class="pt-6">
-				<Moon class="mx-auto mb-2 h-6 w-6 text-primary" />
+				<Moon class="w-6 h-6 mx-auto mb-2 text-primary" />
 				<div class="text-2xl font-bold">
 					{Math.round(
 						($dailyLogsStore.filter((l) => l.eveningRoutine).length /
@@ -181,97 +187,112 @@
 							100
 					)}%
 				</div>
-				<p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+				<p class="text-xs font-medium tracking-wider uppercase text-muted-foreground">
 					Evening Routine
 				</p>
 			</CardContent>
 		</Card>
 	</div>
 
-	<!-- Timeline -->
-	<div class="space-y-6">
+	<!-- Journal Entries -->
 		{#each sortedLogs as log (log.id)}
-			<Card class="group overflow-hidden border-none shadow-sm transition-all hover:shadow-md">
-				<div class="flex flex-col md:flex-row">
-					<!-- Date Sidebar -->
-					<div
-						class="flex flex-col items-center justify-center rounded-r-2xl border-r border-muted/50 bg-muted/70 p-6 text-center md:w-48"
-					>
-						<span class="text-muted-foreground text-sm font-bold tracking-tighter uppercase">
-							{new Date(log.logDate * 1000).toLocaleDateString('en-US', { weekday: 'short' })}
-						</span>
-						<span class="text-3xl font-black tracking-tighter">
-							{new Date(log.logDate * 1000).getDate()}
-						</span>
-						<span class="text-muted-foreground text-xs font-medium">
-							{new Date(log.logDate * 1000).toLocaleDateString('en-US', {
-								month: 'short',
-								year: 'numeric'
-							})}
-						</span>
-					</div>
+	<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 
-					<!-- Content -->
-					<CardContent class="flex-1 space-y-4 p-6">
-						<div class="flex items-start justify-between">
-							<div class="flex items-center gap-3">
-								{#if log.mood && moodConfig[log.mood]}
-									<div class="text-3xl" title={moodConfig[log.mood].label}>
-										{moodConfig[log.mood].emoji}
-									</div>
-								{/if}
-								<div class="space-y-1">
-									<h3 class="leading-none font-bold">{formatDate(log.logDate)}</h3>
-									<div class="flex flex-wrap gap-2">
-										{#if log.sleepHours}
-											<Badge
-												variant="secondary"
-												class="text-[10px] font-bold tracking-wider uppercase"
-											>
-												<Moon class="mr-1 h-3 w-3" />
-												{log.sleepHours}h Sleep
-											</Badge>
-										{/if}
-										{#if log.morningRoutine}
-											<Badge
-												variant="outline"
-												class="border-primary/20 bg-primary/10 text-[10px] font-bold tracking-wider text-primary uppercase"
-											>
-												<Sun class="mr-1 h-3 w-3" /> Morning
-											</Badge>
-										{/if}
-										{#if log.eveningRoutine}
-											<Badge
-												variant="outline"
-												class="border-primary/20 bg-primary/10 text-[10px] font-bold tracking-wider text-primary uppercase"
-											>
-												<Moon class="mr-1 h-3 w-3" /> Evening
-											</Badge>
-										{/if}
-									</div>
+			<Card class="overflow-hidden transition-all border shadow-sm group border-muted/40 bg-background/70 hover:shadow-md">
+				<div class="grid gap-4 p-5 md:grid-cols-[200px,1fr] md:gap-6 md:p-6">
+					<!-- Date + Mood -->
+					<div class="flex flex-col gap-4 p-4 text-center rounded-2xl bg-muted/40 md:text-left">
+						<div>
+							<p class="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+								{new Date(log.logDate * 1000).toLocaleDateString('en-US', { weekday: 'long' })}
+							</p>
+							<div class="flex items-end justify-center gap-2 mt-2 md:justify-start">
+								<span class="text-4xl font-black leading-none">
+									{new Date(log.logDate * 1000).getDate()}
+								</span>
+								<span class="text-xs font-semibold uppercase text-muted-foreground">
+									{new Date(log.logDate * 1000).toLocaleDateString('en-US', {
+										month: 'short',
+										year: 'numeric'
+									})}
+								</span>
+							</div>
+						</div>
+
+						{#if log.mood && moodConfig[log.mood]}
+							<div class="flex items-center justify-center gap-3 md:justify-start">
+								<div class="text-3xl" title={moodConfig[log.mood].label}>
+									{moodConfig[log.mood].emoji}
+								</div>
+								<div class="text-left">
+									<p class="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+										Mood
+									</p>
+									<p class="text-sm font-semibold">{moodConfig[log.mood].label}</p>
 								</div>
 							</div>
+						{/if}
+
+						<div class="flex flex-wrap justify-center gap-2 md:justify-start">
+							{#if log.sleepHours}
+								<Badge variant="secondary" class="text-[10px] font-bold tracking-wider uppercase">
+									<Moon class="w-3 h-3 mr-1" />
+									{log.sleepHours}h Sleep
+								</Badge>
+							{/if}
+							{#if log.morningRoutine}
+								<Badge
+									variant="outline"
+									class="border-primary/20 bg-primary/10 text-[10px] font-bold tracking-wider text-primary uppercase"
+								>
+									<Sun class="w-3 h-3 mr-1" /> Morning
+								</Badge>
+							{/if}
+							{#if log.eveningRoutine}
+								<Badge
+									variant="outline"
+									class="border-primary/20 bg-primary/10 text-[10px] font-bold tracking-wider text-primary uppercase"
+								>
+									<Moon class="w-3 h-3 mr-1" /> Evening
+								</Badge>
+							{/if}
+						</div>
+					</div>
+
+					<!-- Entry -->
+					<div class="flex flex-col min-w-0 gap-4">
+						<div class="flex items-start justify-between">
+							<div>
+								<h3 class="text-lg font-bold leading-none">{formatDate(log.logDate)}</h3>
+								<p class="mt-1 text-xs text-muted-foreground">
+									Reflection & daily notes
+								</p>
+							</div>
 							<button
-								class="text-muted-foreground p-2 opacity-0 transition-all group-hover:opacity-100 hover:text-destructive"
+								class="p-2 transition-all rounded-md opacity-0 text-muted-foreground group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
 								onclick={() => requestDelete(log.logDate)}
 							>
-								<Trash2 class="h-4 w-4" />
+								<Trash2 class="w-4 h-4" />
 							</button>
 						</div>
 
 						{#if log.notes}
-							<div
-								class="text-muted-foreground relative rounded-xl bg-muted/20 p-4 text-sm leading-relaxed italic"
-							>
-								<div class="absolute top-0 left-0 h-full w-1 rounded-full bg-primary/20"></div>
-								"{log.notes}"
+							<div class="relative p-4 text-sm leading-relaxed border rounded-2xl border-muted/40 bg-muted/10">
+								<div class="absolute top-0 left-0 h-full w-1.5 rounded-full bg-primary/20"></div>
+								<p class="italic text-muted-foreground">"{log.notes}"</p>
+							</div>
+						{:else}
+							<div class="p-4 text-sm border border-dashed rounded-2xl border-muted/50 bg-muted/10 text-muted-foreground">
+								No notes for this day.
 							</div>
 						{/if}
-					</CardContent>
+					</div>
 				</div>
 			</Card>
+				</div>
+
 		{:else}
-			<div class="py-20 text-center">
+			<div class="w-full py-20 text-center">
 				<div class="inline-flex p-6 mb-4 rounded-full bg-muted">
 					<Calendar class="w-12 h-12 text-muted-foreground" />
 				</div>
@@ -283,12 +304,11 @@
 				</Button>
 			</div>
 		{/each}
-	</div>
 </div>
 
 <!-- Log Dialog -->
 <Dialog bind:open={showAddDialog}>
-	<DialogContent class="sm:max-w-[500px]">
+<DialogContent class="w-[95vw] max-w-[560px] sm:max-w-[640px] max-h-[85vh] overflow-y-auto">
 		<DialogHeader>
 			<DialogTitle>Daily Log Entry</DialogTitle>
 			<DialogDescription>Reflect on your day and track your habits.</DialogDescription>
@@ -341,7 +361,7 @@
 								: 'bg-background'}"
 							onclick={() => (formMorningRoutine = !formMorningRoutine)}
 						>
-							<Sun class="mr-2 h-4 w-4" />
+							<Sun class="w-4 h-4 mr-2" />
 							<span class="text-xs font-bold">AM</span>
 						</button>
 						<button
@@ -350,7 +370,7 @@
 								: 'bg-background'}"
 							onclick={() => (formEveningRoutine = !formEveningRoutine)}
 						>
-							<Moon class="mr-2 h-4 w-4" />
+							<Moon class="w-4 h-4 mr-2" />
 							<span class="text-xs font-bold">PM</span>
 						</button>
 					</div>
@@ -371,7 +391,7 @@
 </Dialog>
 
 <AlertDialog bind:open={showDeleteDialog}>
-	<AlertDialogContent>
+<AlertDialogContent class="w-[95vw] max-w-[520px] sm:max-w-[560px] max-h-[85vh] overflow-y-auto">
 		<AlertDialogHeader>
 			<AlertDialogTitle>Are you sure?</AlertDialogTitle>
 			<AlertDialogDescription>

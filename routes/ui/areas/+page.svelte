@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
 	import { page } from '$app/stores';
 	const userId = $page.data.userId;
 	import {
@@ -9,6 +11,7 @@
 		projectsStore,
 		tasksStore
 	} from '$lib/stores/external_modules/MoLOS-Tasks';
+	import { hydrateTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import {
@@ -46,6 +49,12 @@
 		ChevronRight
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
+
+	const { data } = $props<PageData>();
+
+	onMount(() => {
+		hydrateTasksData(data);
+	});
 
 	// State
 	let showAddDialog = $state(false);
@@ -259,7 +268,7 @@
 
 <!-- Area Dialogs -->
 <Dialog bind:open={showAddDialog}>
-	<DialogContent class="sm:max-w-[450px]">
+<DialogContent class="w-[95vw] max-w-[520px] sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
 		<DialogHeader>
 			<DialogTitle>Create New Pillar</DialogTitle>
 			<DialogDescription>Define a major area of your life to organize your work.</DialogDescription>
@@ -306,7 +315,7 @@
 </Dialog>
 
 <Dialog bind:open={showEditDialog}>
-	<DialogContent class="sm:max-w-[450px]">
+<DialogContent class="w-[95vw] max-w-[520px] sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
 		<DialogHeader>
 			<DialogTitle>Edit Pillar</DialogTitle>
 			<DialogDescription>Update your life pillar details.</DialogDescription>
@@ -346,7 +355,7 @@
 </Dialog>
 
 <AlertDialog bind:open={showDeleteDialog}>
-	<AlertDialogContent>
+<AlertDialogContent class="w-[95vw] max-w-[520px] sm:max-w-[560px] max-h-[85vh] overflow-y-auto">
 		<AlertDialogHeader>
 			<AlertDialogTitle>Delete Pillar</AlertDialogTitle>
 			<AlertDialogDescription>

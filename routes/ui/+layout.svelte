@@ -1,13 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { loadAllTasksData, tasksUIState } from '$lib/stores/external_modules/MoLOS-Tasks/tasks.store';
 	import { Loader2 } from 'lucide-svelte';
 
 	let { children } = $props();
-
-	onMount(async () => {
-		await loadAllTasksData();
-	});
 </script>
 
 <div class="flex h-full flex-col">

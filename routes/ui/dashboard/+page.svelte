@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
 	import {
 		tasksStore,
 		projectsStore,
@@ -7,6 +9,7 @@
 		taskStats,
 		tasksSettingsStore
 	} from '$lib/stores/external_modules/MoLOS-Tasks';
+	import { hydrateTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Progress } from '$lib/components/ui/progress/index.js';
@@ -24,6 +27,12 @@
 		Calendar,
 		CircleAlert
 	} from 'lucide-svelte';
+
+	const { data } = $props<PageData>();
+
+	onMount(() => {
+		hydrateTasksData(data);
+	});
 
 	// Derived analytics
 	const now = Math.floor(Date.now() / 1000);

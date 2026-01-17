@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
 	import {
 		Card,
 		CardContent,
@@ -13,8 +15,15 @@
 	import { Bell, Eye, Layout, Shield, Trash2, Loader2, Save } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { tasksSettingsStore, updateTasksSettings } from '$lib/stores/external_modules/MoLOS-Tasks';
+	import { hydrateTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
 
 	let isSaving = $state(false);
+
+	const { data } = $props<PageData>();
+
+	onMount(() => {
+		hydrateTasksData(data);
+	});
 
 	// Form state
 	let notifications = $state($tasksSettingsStore?.notifications ?? true);

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
 	import { page } from '$app/stores';
 	const userId = $page.data.userId;
 	import {
@@ -8,12 +10,12 @@
 		addTaskStore,
 		updateTaskStore,
 		deleteTaskStore,
-		tasksUIState,
 		tasksSettingsStore
 	} from '$lib/stores/external_modules/MoLOS-Tasks';
+	import { hydrateTasksData } from '$lib/stores/external_modules/MoLOS-Tasks';
 	import TaskItem from '$lib/components/external_modules/MoLOS-Tasks/task-item.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import { Card, CardContent } from '$lib/components/ui/card';
 	import {
 		Dialog,
 		DialogContent,
@@ -37,7 +39,14 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toast } from 'svelte-sonner';
-	import { Plus, Filter, Search, X, LayoutGrid, List, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { Plus, Filter, Search, X, LayoutGrid, List } from 'lucide-svelte';
+	import KanbanBoard from '$lib/components/external_modules/MoLOS-Tasks/kanban-board.svelte';
+
+	const { data } = $props<PageData>();
+
+	onMount(() => {
+		hydrateTasksData(data);
+	});
 
 	// State
 	let isDragging = $state(false);
@@ -61,6 +70,7 @@
 	let formAreaId = $state<string>('');
 
 	let selectedProjectNames = $state<string[]>([]);
+	let collapsedColumns = $state<Record<string, boolean>>({});
 	let filters = $state({
 		status: '',
 		priority: '',
@@ -173,20 +183,16 @@
 		}
 	};
 
-	// Drag & Drop
-	function handleDragOver(e: DragEvent) {
-		e.preventDefault();
-	}
+	const getColumnTasks = (columnId: string) => {
+		return filteredTasks.filter((t) => t.status === columnId);
+	};
 
-	function handleDrop(e: DragEvent, status: any) {
-		e.preventDefault();
-		const target = e.currentTarget as HTMLElement;
-		target.classList.remove('bg-primary/5', 'border-primary', 'border-dashed');
-		const taskId = e.dataTransfer!.getData('text/plain');
-		if (taskId) {
-			handleUpdateStatus(taskId, status);
-		}
-	}
+	const toggleColumn = (columnId: string) => {
+		collapsedColumns = {
+			...collapsedColumns,
+			[columnId]: !collapsedColumns[columnId]
+		};
+	};
 
 	// Filtering
 	const matchesFilters = (task: any) => {
@@ -235,14 +241,14 @@
 			<p class="text-muted-foreground">Manage and organize your personal tasks.</p>
 		</div>
 		<div class="flex items-center gap-2">
-			<div class="flex rounded-lg border bg-muted/50 p-1">
+			<div class="flex p-1 border rounded-lg bg-muted/50">
 				<Button
 					variant={viewMode === 'kanban' ? 'secondary' : 'ghost'}
 					size="sm"
 					class="h-8 px-3"
 					onclick={() => (viewMode = 'kanban')}
 				>
-					<LayoutGrid class="mr-2 h-4 w-4" />
+					<LayoutGrid class="w-4 h-4 mr-2" />
 					Board
 				</Button>
 				<Button
@@ -251,33 +257,33 @@
 					class="h-8 px-3"
 					onclick={() => (viewMode = 'list')}
 				>
-					<List class="mr-2 h-4 w-4" />
+					<List class="w-4 h-4 mr-2" />
 					List
 				</Button>
 			</div>
 			<Button onclick={openAdd} class="rounded-full shadow-lg">
-				<Plus class="mr-2 h-5 w-5" />
+				<Plus class="w-5 h-5 mr-2" />
 				New Task
 			</Button>
 		</div>
 	</div>
 
 	<!-- Toolbar -->
-	<Card class="border-none bg-accent/30 shadow-sm">
+	<Card class="border-none shadow-sm bg-accent/30">
 		<CardContent class="p-3">
 			<div class="flex flex-wrap items-center gap-3">
-				<div class="relative min-w-50 flex-1">
-					<Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+				<div class="relative flex-1 min-w-50">
+					<Search class="absolute w-4 h-4 -translate-y-1/2 text-muted-foreground top-1/2 left-3" />
 					<Input
 						placeholder="Search tasks..."
 						bind:value={search}
-						class="border-none bg-background pl-9 shadow-sm"
+						class="border-none shadow-sm bg-background pl-9"
 					/>
 				</div>
 
 				<!-- Project Filter -->
 				<div class="w-full mt-2">
-					<div class="flex gap-2 overflow-x-auto pb-2">
+					<div class="flex gap-2 pb-2 overflow-x-auto">
 						{#each activeProjects as project}
 							{#if !selectedProjectNames.includes(project.name)}
 								<Badge
@@ -292,7 +298,7 @@
 						{#each selectedProjectNames as name}
 							<Badge variant="default" class="cursor-pointer shrink-0">
 								{name}
-								<X class="ml-1 h-3 w-3" onclick={() => selectedProjectNames = selectedProjectNames.filter(n => n !== name)} />
+								<X class="w-3 h-3 ml-1" onclick={() => selectedProjectNames = selectedProjectNames.filter(n => n !== name)} />
 							</Badge>
 						{/each}
 						<input
@@ -323,7 +329,7 @@
 					onclick={() => (filterOpen = !filterOpen)}
 					class="shadow-sm"
 				>
-					<Filter class="mr-2 h-4 w-4" />
+					<Filter class="w-4 h-4 mr-2" />
 					Filters
 					{#if Object.values(filters).some((v) => v !== '')}
 						<Badge variant="default" class="ml-2 h-5 min-w-[20px] px-1.5"
@@ -357,7 +363,7 @@
 							};
 						}}
 					>
-						<X class="mr-2 h-4 w-4" />
+						<X class="w-4 h-4 mr-2" />
 						Clear
 					</Button>
 				{/if}
@@ -365,15 +371,15 @@
 
 			{#if filterOpen}
 				<div
-					class="mt-4 grid animate-in grid-cols-1 gap-4 fade-in slide-in-from-top-2 md:grid-cols-3 lg:grid-cols-5"
+					class="grid grid-cols-1 gap-4 mt-4 animate-in fade-in slide-in-from-top-2 md:grid-cols-3 lg:grid-cols-5"
 				>
 					<div class="space-y-1.5">
-						<Label class="text-muted-foreground text-xs font-bold tracking-wider uppercase"
+						<Label class="text-xs font-bold tracking-wider uppercase text-muted-foreground"
 							>Priority</Label
 						>
 						<select
 							bind:value={filters.priority}
-							class="h-9 w-full rounded-md border bg-background px-3 text-sm"
+							class="w-full px-3 text-sm border rounded-md h-9 bg-background"
 						>
 							<option value="">All Priorities</option>
 							<option value="high">High</option>
@@ -382,12 +388,12 @@
 						</select>
 					</div>
 					<div class="space-y-1.5">
-						<Label class="text-muted-foreground text-xs font-bold tracking-wider uppercase"
+						<Label class="text-xs font-bold tracking-wider uppercase text-muted-foreground"
 							>Area</Label
 						>
 						<select
 							bind:value={filters.areaId}
-							class="h-9 w-full rounded-md border bg-background px-3 text-sm"
+							class="w-full px-3 text-sm border rounded-md h-9 bg-background"
 						>
 							<option value="">All Areas</option>
 							{#each $areasStore as a}
@@ -396,13 +402,13 @@
 						</select>
 					</div>
 					<div class="space-y-1.5">
-						<Label class="text-muted-foreground text-xs font-bold tracking-wider uppercase"
+						<Label class="text-xs font-bold tracking-wider uppercase text-muted-foreground"
 							>Due From</Label
 						>
 						<Input type="date" bind:value={filters.dueDateFrom} class="h-9" />
 					</div>
 					<div class="space-y-1.5">
-						<Label class="text-muted-foreground text-xs font-bold tracking-wider uppercase"
+						<Label class="text-xs font-bold tracking-wider uppercase text-muted-foreground"
 							>Due To</Label
 						>
 						<Input type="date" bind:value={filters.dueDateTo} class="h-9" />
@@ -414,66 +420,35 @@
 
 	<!-- Content -->
 	{#if viewMode === 'kanban'}
-		<div
-			class="grid grid-cols-1 gap-6 overflow-x-auto pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+		<KanbanBoard
+			{columns}
+			{collapsedColumns}
+			getItemsForColumn={getColumnTasks}
+			onToggleColumn={toggleColumn}
+			onDropItem={(taskId, status) => handleUpdateStatus(taskId, status)}
 		>
-			{#each columns as col}
-				<div class="flex min-w-[300px] flex-col gap-4">
-					<div class="flex items-center justify-between px-2">
-						<div class="flex items-center gap-2">
-							<div class="h-2.5 w-2.5 rounded-full {col.color}"></div>
-							<h3 class="text-muted-foreground text-sm font-bold tracking-widest uppercase">
-								{col.title}
-							</h3>
-						</div>
-						<Badge variant="secondary" class="h-5 rounded-full px-2 py-0 text-[10px] font-bold">
-							{filteredTasks.filter((t) => t.status === col.id).length}
-						</Badge>
-					</div>
+			{#snippet item({ item })}
+				{@const task = item}
+				<TaskItem
+					{task}
+					compact={compactMode}
+					on:toggle={() => handleToggle(task)}
+					on:requestEdit={(e) => openEdit(e.detail)}
+					on:delete={() => requestDelete(task.id)}
+					on:dragstart={() => (isDragging = true)}
+					on:dragend={() => (isDragging = false)}
+				/>
+			{/snippet}
 
-					<div
-						class="min-h-[500px] flex-1 rounded-xl border-2 border-transparent bg-muted/20 p-2 transition-colors"
-						role="list"
-						aria-label="{col.title} tasks"
-						ondragover={handleDragOver}
-						ondrop={(e) => handleDrop(e, col.id)}
-						ondragenter={(e) =>
-							(e.currentTarget as HTMLElement).classList.add(
-								'bg-primary/5',
-								'border-primary',
-								'border-dashed'
-							)}
-						ondragleave={(e) =>
-							(e.currentTarget as HTMLElement).classList.remove(
-								'bg-primary/5',
-								'border-primary',
-								'border-dashed'
-							)}
-					>
-						<div class="space-y-3">
-							{#each filteredTasks.filter((t) => t.status === col.id) as task (task.id)}
-								<TaskItem
-									{task}
-									compact={compactMode}
-									on:toggle={() => handleToggle(task)}
-									on:requestEdit={(e) => openEdit(e.detail)}
-									on:delete={() => requestDelete(task.id)}
-									on:dragstart={() => (isDragging = true)}
-									on:dragend={() => (isDragging = false)}
-								/>
-							{:else}
-								<div class="flex flex-col items-center justify-center py-12 text-center opacity-40">
-									<div class="p-3 mb-2 rounded-full bg-muted">
-										<Plus class="w-5 h-5" />
-									</div>
-									<p class="text-xs font-medium">No tasks</p>
-								</div>
-							{/each}
-						</div>
+			{#snippet empty()}
+				<div class="flex flex-col items-center justify-center py-12 text-center opacity-40">
+					<div class="p-3 mb-2 rounded-full bg-muted">
+						<Plus class="w-5 h-5" />
 					</div>
+					<p class="text-xs font-medium">No tasks</p>
 				</div>
-			{/each}
-		</div>
+			{/snippet}
+		</KanbanBoard>
 	{:else}
 		<Card>
 			<CardContent class="p-0">
@@ -501,7 +476,7 @@
 
 <!-- Task Dialog -->
 <Dialog bind:open>
-	<DialogContent class="sm:max-w-[500px]">
+<DialogContent class="w-[95vw] max-w-[560px] sm:max-w-[640px] max-h-[85vh] overflow-y-auto">
 		<DialogHeader>
 			<DialogTitle>{editingTaskId ? 'Edit Task' : 'Create New Task'}</DialogTitle>
 			<DialogDescription>
@@ -538,7 +513,7 @@
 					<select
 						id="status"
 						bind:value={formStatus}
-						class="h-10 w-full rounded-md border bg-background px-3"
+						class="w-full h-10 px-3 border rounded-md bg-background"
 					>
 						<option value="to_do">To Do</option>
 						<option value="in_progress">In Progress</option>
@@ -552,7 +527,7 @@
 					<select
 						id="priority"
 						bind:value={formPriority}
-						class="h-10 w-full rounded-md border bg-background px-3"
+						class="w-full h-10 px-3 border rounded-md bg-background"
 					>
 						<option value="high">High</option>
 						<option value="medium">Medium</option>
@@ -571,7 +546,7 @@
 					<select
 						id="project"
 						bind:value={formProjectId}
-						class="h-10 w-full rounded-md border bg-background px-3"
+						class="w-full h-10 px-3 border rounded-md bg-background"
 					>
 						<option value="">No Project</option>
 						{#each $projectsStore as p}
@@ -590,7 +565,7 @@
 </Dialog>
 
 <AlertDialog bind:open={showDeleteDialog}>
-	<AlertDialogContent>
+<AlertDialogContent class="w-[95vw] max-w-[520px] sm:max-w-[560px] max-h-[85vh] overflow-y-auto">
 		<AlertDialogHeader>
 			<AlertDialogTitle>Are you sure?</AlertDialogTitle>
 			<AlertDialogDescription>This will permanently delete this task.</AlertDialogDescription>
