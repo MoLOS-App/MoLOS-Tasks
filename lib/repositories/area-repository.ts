@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, like, or, sql } from "drizzle-orm";
 import { tasksAreas } from "$lib/server/db/schema/external_modules/MoLOS-Tasks/tables";
 import type { Area } from "$lib/models/external_modules/MoLOS-Tasks";
 import { BaseRepository } from "./base-repository";
@@ -29,6 +29,29 @@ export class AreaRepository extends BaseRepository {
     const result = await this.db.insert(tasksAreas).values(area).returning();
 
     return result[0] as Area;
+  }
+
+  async searchByUserId(
+    userId: string,
+    query: string,
+    limit: number = 50,
+  ): Promise<Area[]> {
+    const term = `%${query}%`;
+    const result = await this.db
+      .select()
+      .from(tasksAreas)
+      .where(
+        and(
+          eq(tasksAreas.userId, userId),
+          or(
+            like(tasksAreas.name, term),
+            like(sql<string>`coalesce(${tasksAreas.description}, '')`, term),
+          ),
+        ),
+      )
+      .limit(limit);
+
+    return result as Area[];
   }
 
   async update(

@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, like, or, sql } from "drizzle-orm";
 import { tasksDailyLog } from "$lib/server/db/schema/external_modules/MoLOS-Tasks/tables";
 import type { DailyLog } from "$lib/models/external_modules/MoLOS-Tasks";
 import { BaseRepository } from "./base-repository";
@@ -40,6 +40,29 @@ export class DailyLogRepository extends BaseRepository {
       .limit(days);
 
     return result.filter((log: any) => log.logDate >= startDate) as DailyLog[];
+  }
+
+  async searchByUserId(
+    userId: string,
+    query: string,
+    limit: number = 30,
+  ): Promise<DailyLog[]> {
+    const term = `%${query}%`;
+    const result = await this.db
+      .select()
+      .from(tasksDailyLog)
+      .where(
+        and(
+          eq(tasksDailyLog.userId, userId),
+          or(
+            like(sql<string>`coalesce(${tasksDailyLog.notes}, '')`, term),
+            like(sql<string>`coalesce(${tasksDailyLog.mood}, '')`, term),
+          ),
+        ),
+      )
+      .limit(limit);
+
+    return result as DailyLog[];
   }
 
   async create(

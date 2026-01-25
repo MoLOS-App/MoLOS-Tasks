@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, like, or, sql } from "drizzle-orm";
 import { tasksProjects } from "$lib/server/db/schema/external_modules/MoLOS-Tasks/tables";
 import type { Project } from "$lib/models/external_modules/MoLOS-Tasks";
 import { BaseRepository } from "./base-repository";
@@ -45,6 +45,29 @@ export class ProjectRepository extends BaseRepository {
           eq(tasksProjects.status, "active"),
         ),
       );
+
+    return result as Project[];
+  }
+
+  async searchByUserId(
+    userId: string,
+    query: string,
+    limit: number = 50,
+  ): Promise<Project[]> {
+    const term = `%${query}%`;
+    const result = await this.db
+      .select()
+      .from(tasksProjects)
+      .where(
+        and(
+          eq(tasksProjects.userId, userId),
+          or(
+            like(tasksProjects.name, term),
+            like(sql<string>`coalesce(${tasksProjects.description}, '')`, term),
+          ),
+        ),
+      )
+      .limit(limit);
 
     return result as Project[];
   }

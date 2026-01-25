@@ -1,4 +1,4 @@
-import { eq, and, count } from "drizzle-orm";
+import { eq, and, count, like, or, sql } from "drizzle-orm";
 import { tasksTasks } from "$lib/server/db/schema/external_modules/MoLOS-Tasks/tables";
 import type {
   Task,
@@ -26,6 +26,29 @@ export class TaskRepository extends BaseRepository {
       .select()
       .from(tasksTasks)
       .where(eq(tasksTasks.userId, userId))
+      .limit(limit);
+
+    return result.map((row) => this.mapToTask(row));
+  }
+
+  async searchByUserId(
+    userId: string,
+    query: string,
+    limit: number = 50,
+  ): Promise<Task[]> {
+    const term = `%${query}%`;
+    const result = await this.db
+      .select()
+      .from(tasksTasks)
+      .where(
+        and(
+          eq(tasksTasks.userId, userId),
+          or(
+            like(tasksTasks.title, term),
+            like(sql<string>`coalesce(${tasksTasks.description}, '')`, term),
+          ),
+        ),
+      )
       .limit(limit);
 
     return result.map((row) => this.mapToTask(row));
